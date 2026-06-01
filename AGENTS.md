@@ -14,3 +14,7 @@ The `tasks/` directory contains 1064 implementation tasks across 17 categories (
 ## csharpStandards
 
 Read `plans/csharpStandards.md` before writing any C# code. All code must follow those naming, style, logging, DI, performance, and error-handling rules.
+
+## git
+
+Never commit or push unless the user explicitly asks you to.
