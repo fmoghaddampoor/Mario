@@ -14,5 +14,6 @@
     <PackageReference Include="Serilog.Enrichers.Environment" />
     <PackageReference Include="Serilog.Enrichers.Thread" />
     <PackageReference Include="Silk.NET.OpenGL" />
+    <PackageReference Include="StbImageSharp" />
   </ItemGroup>
 </Project>
