@@ -12,11 +12,22 @@ public sealed class BloomPass : IDisposable
 {
     private static readonly string ShaderDir = Path.Combine(AppContext.BaseDirectory, "Shaders");
 
+    /// <summary>Shader program for bright-pass extraction.</summary>
     private readonly uint _brightProgram;
+
+    /// <summary>Shader program for Gaussian blur (shared for H/V).</summary>
     private readonly uint _blurProgram;
+
+    /// <summary>Shader program for bloom combine pass.</summary>
     private readonly uint _combineProgram;
+
+    /// <summary>FBO for bright-pass and vertical blur results.</summary>
     private readonly FrameBuffer _brightFb;
+
+    /// <summary>FBO for horizontal blur result.</summary>
     private readonly FrameBuffer _blurFb;
+
+    /// <summary>True after Dispose has been called.</summary>
     private bool _disposed;
 
     /// <summary>Initializes a new instance of the <see cref="BloomPass"/> class.</summary>

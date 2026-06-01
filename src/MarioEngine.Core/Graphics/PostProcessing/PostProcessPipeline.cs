@@ -10,10 +10,19 @@ using Silk.NET.OpenGL;
 /// </summary>
 public sealed class PostProcessPipeline : IDisposable
 {
+    /// <summary>OpenGL context for framebuffer operations.</summary>
     private readonly GL _gl;
+
+    /// <summary>Primary framebuffer for scene rendering.</summary>
     private readonly FrameBuffer _mainFb;
+
+    /// <summary>Swap framebuffer for ping-pong between passes.</summary>
     private readonly FrameBuffer _swapFb;
+
+    /// <summary>Ordered list of post-processing passes.</summary>
     private readonly List<PassEntry> _passes;
+
+    /// <summary>True after Dispose has been called.</summary>
     private bool _disposed;
 
     /// <summary>

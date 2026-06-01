@@ -13,6 +13,7 @@ public sealed class FadePass
 {
     private static readonly string ShaderDir = Path.Combine(AppContext.BaseDirectory, "Shaders");
 
+    /// <summary>Shader program for fade-to-black effect.</summary>
     private readonly uint _program;
 
     /// <summary>

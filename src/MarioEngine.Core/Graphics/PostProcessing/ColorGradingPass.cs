@@ -13,6 +13,7 @@ public sealed class ColorGradingPass
 {
     private static readonly string ShaderDir = Path.Combine(AppContext.BaseDirectory, "Shaders");
 
+    /// <summary>Shader program for LUT-based color grading.</summary>
     private readonly uint _program;
 
     /// <summary>

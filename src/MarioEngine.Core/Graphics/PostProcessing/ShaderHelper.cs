@@ -19,7 +19,10 @@ void main() {
     vTexCoord = aTexCoord;
 }";
 
+    /// <summary>Cached full-screen quad VAO handle.</summary>
     private static uint _vao;
+
+    /// <summary>True after the shared VAO has been created.</summary>
     private static bool _vaoInitialized;
 
     /// <summary>
