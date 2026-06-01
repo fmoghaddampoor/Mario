@@ -86,5 +86,12 @@ internal sealed partial class SplashScreen : IDisposable
         _gl.DeleteTexture(_textureHandle);
         _gl.DeleteVertexArray(_vao);
         _gl.DeleteBuffer(_vbo);
+
+        if (_starsInitialized)
+        {
+            _gl.DeleteProgram(_starProgram);
+            _gl.DeleteVertexArray(_starVao);
+            _gl.DeleteBuffer(_starVbo);
+        }
     }
 }
