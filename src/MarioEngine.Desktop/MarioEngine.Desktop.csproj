@@ -10,6 +10,9 @@
     <None Include="splash_stars.png" CopyToOutputDirectory="PreserveNewest" />
     <None Include="splash_overlay.png" CopyToOutputDirectory="PreserveNewest" />
     <None Include="app.ini" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Shaders\splash.vert" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Shaders\splash.frag" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Shaders\star.frag" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Silk.NET.Windowing" />

@@ -55,11 +55,16 @@ internal sealed partial class SplashScreen
         _gl.BindVertexArray(_vao);
         _gl.DrawArrays(PrimitiveType.Triangles, 0, 6);
 
-        // Layer 2: Stars (static, with blending)
+        // Layer 2: Stars (pulsing brightness)
         _gl.Enable(EnableCap.Blend);
         _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+        _gl.UseProgram(_starProgram);
+        _gl.ActiveTexture(TextureUnit.Texture0);
         _gl.BindTexture(TextureTarget.Texture2D, _starsTexture);
-        _gl.Uniform1(texLoc, 0);
+        var starTexLoc = _gl.GetUniformLocation(_starProgram, "uTexture");
+        var starTimeLoc = _gl.GetUniformLocation(_starProgram, "uTime");
+        _gl.Uniform1(starTexLoc, 0);
+        _gl.Uniform1(starTimeLoc, _elapsed);
         _gl.BindVertexArray(_vao);
         _gl.DrawArrays(PrimitiveType.Triangles, 0, 6);
 
