@@ -1,7 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <ApplicationIcon>game.ico</ApplicationIcon>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="game.ico" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Silk.NET.Windowing" />
     <PackageReference Include="Silk.NET.OpenGL" />
