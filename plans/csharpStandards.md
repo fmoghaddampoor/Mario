@@ -153,7 +153,7 @@ Usings inside namespace
 Members ordered: constants → fields → constructor → properties → methods → private methods
 ```
 
-## 13. What NOT to Do
+## 14. What NOT to Do
 
 - No hardcoded paths (use AssetManager or config)
 - No secrets/keys/credentials in code (use env vars)

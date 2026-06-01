@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter</value></resheader>
+  <data name="Window_Title" xml:space="preserve"><value>Super Mario — v</value></data>
+  <data name="Window_Starting" xml:space="preserve"><value>Window starting</value></data>
+  <data name="Window_Opened" xml:space="preserve"><value>Window opened: {Width}x{Height}, GL {Major}.{Minor}</value></data>
+  <data name="Framebuffer_Resized" xml:space="preserve"><value>Framebuffer resized: {Width}x{Height}</value></data>
+  <data name="Splash_Created" xml:space="preserve"><value>Splash screen created</value></data>
+  <data name="Splash_Finished" xml:space="preserve"><value>Splash finished, starting game</value></data>
+  <data name="GL_NotAvailable" xml:space="preserve"><value>OpenGL context not available until window is loaded</value></data>
+  <data name="Shader_LinkFailed" xml:space="preserve"><value>Shader program link failed: {Info}</value></data>
+  <data name="Shader_CompileFailed" xml:space="preserve"><value>Shader compile failed ({Type}): {Info}</value></data>
+  <data name="Splash_NotFound" xml:space="preserve"><value>Splash image not found: {Path}</value></data>
+  <data name="Fatal_UnhandledException" xml:space="preserve"><value>Unhandled exception — game crashed</value></data>
+  <data name="Fatal_ErrorMessage" xml:space="preserve"><value>Fatal error: {Message}</value></data>
+</root>

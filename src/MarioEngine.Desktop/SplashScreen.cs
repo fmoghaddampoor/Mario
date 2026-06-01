@@ -2,6 +2,7 @@ namespace MarioEngine.Desktop;
 
 using System;
 using System.IO;
+using MarioEngine.Desktop.Resources;
 using Serilog;
 using Silk.NET.OpenGL;
 using StbImageSharp;
@@ -78,7 +79,7 @@ void main()
         var textureHandle = LoadTexture(gl, SplashPath);
         var (vao, vbo) = CreateQuad(gl);
 
-        Log.Information("Splash screen created");
+        Log.Information(Resources.Strings.Splash_Created);
 
         return new SplashScreen(gl, program, textureHandle, vao, vbo);
     }
@@ -138,7 +139,7 @@ void main()
         if (success == 0)
         {
             var info = gl.GetProgramInfoLog(program);
-            throw new InvalidOperationException($"Shader program link failed: {info}");
+            throw new InvalidOperationException(string.Format(Resources.Strings.Shader_LinkFailed, info));
         }
 
         gl.DetachShader(program, vertex);
@@ -159,7 +160,7 @@ void main()
         if (success == 0)
         {
             var info = gl.GetShaderInfoLog(shader);
-            throw new InvalidOperationException($"Shader compile failed ({type}): {info}");
+            throw new InvalidOperationException(string.Format(Resources.Strings.Shader_CompileFailed, type, info));
         }
 
         return shader;
@@ -169,7 +170,7 @@ void main()
     {
         if (!File.Exists(path))
         {
-            throw new FileNotFoundException($"Splash image not found: {path}");
+            throw new FileNotFoundException(string.Format(Resources.Strings.Splash_NotFound, path));
         }
 
         ImageResult image;

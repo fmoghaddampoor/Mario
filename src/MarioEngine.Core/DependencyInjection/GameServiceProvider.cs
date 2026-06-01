@@ -1,6 +1,7 @@
 namespace MarioEngine.Core.DependencyInjection;
 
 using System;
+using MarioEngine.Core.Resources;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -29,7 +30,7 @@ public sealed class GameServiceProvider : IDisposable
     public static GameServiceProvider CreateDefault()
     {
         var provider = new GameServiceProvider();
-        Log.Information("DI container initialized");
+        Log.Information(Resources.Strings.DI_Container_Initialized);
         return provider;
     }
 

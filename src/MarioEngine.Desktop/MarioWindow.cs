@@ -2,8 +2,8 @@ namespace MarioEngine.Desktop;
 
 using System;
 using MarioEngine.Core;
+using MarioEngine.Desktop.Resources;
 using Microsoft.Extensions.Logging;
-using Serilog;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 
@@ -20,9 +20,6 @@ internal sealed partial class MarioWindow : IDisposable
     /// <summary>Logger instance for window lifecycle events.</summary>
     private readonly ILogger<MarioWindow> _logger;
 
-    /// <summary>OpenGL context. Set during the window Load event.</summary>
-    private GL? _gl;
-
     /// <summary>Shared state for the splash-to-game startup transition.</summary>
     private GameStartupState? _startupState;
 
@@ -38,8 +35,11 @@ internal sealed partial class MarioWindow : IDisposable
     /// <summary>Occurs when the window or framebuffer is resized.</summary>
     public event Action<int, int>? OnResize;
 
+    /// <summary>Gets or sets the OpenGL context. Set during the window Load event.</summary>
+    internal GL? GLContext { get; set; }
+
     /// <summary>Gets the OpenGL context. Only valid after the window Load event.</summary>
-    public GL GL => _gl ?? throw new InvalidOperationException("OpenGL context not available until window is loaded");
+    public GL GL => this.GLContext ?? throw new InvalidOperationException(Resources.Strings.GL_NotAvailable);
 
     /// <summary>Gets the window width in pixels.</summary>
     public int Width => _window.Size.X;
@@ -64,7 +64,7 @@ internal sealed partial class MarioWindow : IDisposable
         var parsed = CliArgParser.Parse(args);
         var options = WindowOptions.Default;
 
-        options.Title = "Super Mario \u2014 v" + VersionInfo.Current;
+        options.Title = Resources.Strings.Window_Title + VersionInfo.Current;
         options.Size = new Silk.NET.Maths.Vector2D<int>(parsed.Width, parsed.Height);
         options.WindowBorder = parsed.Fullscreen ? WindowBorder.Hidden : WindowBorder.Resizable;
         options.VSync = true;
@@ -79,30 +79,8 @@ internal sealed partial class MarioWindow : IDisposable
 
         var marioWindow = new MarioWindow(nativeWindow, logger);
 
-        nativeWindow.Load += () =>
-        {
-            marioWindow._gl = nativeWindow.CreateOpenGL();
-
-            if (logger.IsEnabled(LogLevel.Information))
-            {
-                logger.LogInformation(
-                    "Window opened: {Width}x{Height}, GL {Major}.{Minor}",
-                    parsed.Width,
-                    parsed.Height,
-                    4,
-                    6);
-            }
-
-            nativeWindow.FramebufferResize += (size) =>
-            {
-                if (logger.IsEnabled(LogLevel.Debug))
-                {
-                    logger.LogDebug("Framebuffer resized: {Width}x{Height}", size.X, size.Y);
-                }
-
-                marioWindow.OnResize?.Invoke(size.X, size.Y);
-            };
-        };
+        nativeWindow.Load += new MarioWindowInitializer(
+            nativeWindow, marioWindow, logger, parsed.Width, parsed.Height).HandleLoad;
 
         return marioWindow;
     }
@@ -110,7 +88,7 @@ internal sealed partial class MarioWindow : IDisposable
     /// <summary>Runs the window. Blocks until the window closes.</summary>
     public void Run()
     {
-        _logger.LogInformation("Window starting");
+        _logger.LogInformation(Resources.Strings.Window_Starting);
         _window.Run();
     }
 
@@ -118,8 +96,16 @@ internal sealed partial class MarioWindow : IDisposable
     public void Dispose()
     {
         _startupState?.Splash?.Dispose();
-        _gl?.Dispose();
+        this.GLContext?.Dispose();
         _window.Dispose();
+    }
+
+    /// <summary>Raises the <see cref="OnResize"/> event from external handler classes.</summary>
+    /// <param name="width">New framebuffer width in pixels.</param>
+    /// <param name="height">New framebuffer height in pixels.</param>
+    internal void RaiseResize(int width, int height)
+    {
+        this.OnResize?.Invoke(width, height);
     }
 
     /// <summary>Creates the splash screen and stores it in the startup state.</summary>

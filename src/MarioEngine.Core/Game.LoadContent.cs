@@ -1,5 +1,6 @@
 namespace MarioEngine.Core;
 
+using MarioEngine.Core.Resources;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
@@ -14,6 +15,6 @@ public partial class Game
     /// </summary>
     public virtual void LoadContent()
     {
-        _logger.LogInformation("Game.LoadContent started");
+        _logger.LogInformation(Resources.Strings.Game_LoadContent_Started);
     }
 }

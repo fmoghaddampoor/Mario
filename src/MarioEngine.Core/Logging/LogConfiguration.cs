@@ -2,6 +2,7 @@ namespace MarioEngine.Core.Logging;
 
 using System;
 using System.IO;
+using MarioEngine.Core.Resources;
 using Serilog;
 using Serilog.Sinks.Grafana.Loki;
 
@@ -57,7 +58,7 @@ public static class LogConfiguration
         }
 
         Log.Logger = config.CreateLogger();
-        Log.Information("Logging initialized. Seq: {Seq}, Loki: {Loki}", seqUrl?.ToString() ?? "off", lokiUrl?.ToString() ?? "off");
+        Log.Information(Resources.Strings.Logging_Initialized, seqUrl?.ToString() ?? "off", lokiUrl?.ToString() ?? "off");
 
         return new LogCloser();
     }

@@ -4,6 +4,7 @@ using System;
 using MarioEngine.Core;
 using MarioEngine.Core.DependencyInjection;
 using MarioEngine.Core.Logging;
+using MarioEngine.Desktop.Resources;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
@@ -35,8 +36,8 @@ internal static class Program
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
         {
-            Log.Fatal(ex, "Unhandled exception \u2014 game crashed");
-            Console.Error.WriteLine($"Fatal error: {ex.Message}");
+            Log.Fatal(ex, Resources.Strings.Fatal_UnhandledException);
+            Console.Error.WriteLine(string.Format(Resources.Strings.Fatal_ErrorMessage, ex.Message));
         }
         finally
         {

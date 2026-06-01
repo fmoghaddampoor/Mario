@@ -1,5 +1,6 @@
 namespace MarioEngine.Core;
 
+using MarioEngine.Core.Resources;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
@@ -14,7 +15,7 @@ public partial class Game
     /// </summary>
     public virtual void Shutdown()
     {
-        _logger.LogInformation("Game.Shutdown started");
-        _logger.LogInformation("Game shutting down");
+        _logger.LogInformation(Resources.Strings.Game_Shutdown_Started);
+        _logger.LogInformation(Resources.Strings.Game_ShuttingDown);
     }
 }

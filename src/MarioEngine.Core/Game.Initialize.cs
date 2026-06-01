@@ -1,5 +1,6 @@
 namespace MarioEngine.Core;
 
+using MarioEngine.Core.Resources;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
@@ -14,7 +15,7 @@ public partial class Game
     /// </summary>
     public virtual void Initialize()
     {
-        _logger.LogInformation("Game initializing");
-        _logger.LogInformation("Game initialized");
+        _logger.LogInformation(Resources.Strings.Game_Initializing);
+        _logger.LogInformation(Resources.Strings.Game_Initialized);
     }
 }

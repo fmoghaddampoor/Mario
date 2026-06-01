@@ -1,6 +1,7 @@
 namespace MarioEngine.Desktop;
 
 using MarioEngine.Core;
+using MarioEngine.Desktop.Resources;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
@@ -44,7 +45,7 @@ internal sealed class MarioWindowUpdateHandler
 
         if (_state.Splash != null && _state.Splash.IsFinished)
         {
-            _logger.LogInformation("Splash finished, starting game");
+            _logger.LogInformation(Resources.Strings.Splash_Finished);
             _state.Splash.Dispose();
             _state.Splash = null;
             _state.GameStarted = true;
