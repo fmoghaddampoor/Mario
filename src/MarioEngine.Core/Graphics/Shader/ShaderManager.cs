@@ -39,7 +39,7 @@ public sealed partial class ShaderManager
         {
             if (_defaultShader == null)
             {
-                _defaultShader = LoadShader("default", "Shaders/default.vert", "Shaders/default.frag");
+                _defaultShader = LoadShader("default", "Shader/default.vert", "Shader/default.frag");
             }
 
             return _defaultShader;
