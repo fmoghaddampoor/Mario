@@ -6,7 +6,8 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="game.ico" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="splash.png" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="splash_bg.png" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="splash_text.png" CopyToOutputDirectory="PreserveNewest" />
     <None Include="app.ini" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>

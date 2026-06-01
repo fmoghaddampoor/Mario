@@ -7,31 +7,35 @@ using Serilog;
 using Silk.NET.OpenGL;
 
 /// <summary>
-/// Displays a splash screen image for a fixed duration using OpenGL.
-/// Shows a spectacular cosmic scene for a configurable duration at startup.
-/// Renders with correct aspect ratio and letterboxing on any display.
-/// This class is split across multiple files by feature area.
+/// Displays a splash screen using multiple render layers:
+/// - Background layer (gradient + nebula + center orb)
+/// - Star layer (GPU particle system with independent twinkling)
+/// - Text layer ("GRAVITON WORKS" with glow)
+/// Each layer is independent, enabling clean animation effects.
 /// </summary>
 internal sealed partial class SplashScreen : IDisposable
 {
     private const float ImageAspectRatio = 1920f / 1080f;
 
-    private static readonly string SplashPath = Path.Combine(
-        AppContext.BaseDirectory, "splash.png");
+    private static readonly string BgPath = Path.Combine(AppContext.BaseDirectory, "splash_bg.png");
+    private static readonly string TextPath = Path.Combine(AppContext.BaseDirectory, "splash_text.png");
 
-    /// <summary>OpenGL context used for rendering the splash texture.</summary>
+    /// <summary>OpenGL context used for rendering.</summary>
     private readonly GL _gl;
 
-    /// <summary>Handle to the compiled shader program for textured quad rendering.</summary>
+    /// <summary>Shader program for textured quad rendering.</summary>
     private readonly uint _program;
 
-    /// <summary>Handle to the OpenGL texture containing the splash image.</summary>
-    private readonly uint _textureHandle;
+    /// <summary>Background layer texture handle (gradient, nebula, orb).</summary>
+    private readonly uint _bgTexture;
 
-    /// <summary>Handle to the vertex array object for the full-screen quad.</summary>
+    /// <summary>Text layer texture handle (GRAVITON WORKS with glow).</summary>
+    private readonly uint _textTexture;
+
+    /// <summary>Full-screen quad vertex array object (shared for both layers).</summary>
     private readonly uint _vao;
 
-    /// <summary>Handle to the vertex buffer object for the quad vertex data.</summary>
+    /// <summary>Full-screen quad vertex buffer object (shared for both layers).</summary>
     private readonly uint _vbo;
 
     /// <summary>How long the splash screen is displayed in seconds.</summary>
@@ -40,11 +44,12 @@ internal sealed partial class SplashScreen : IDisposable
     /// <summary>Elapsed time in seconds since the splash screen started displaying.</summary>
     private float _elapsed;
 
-    private SplashScreen(GL gl, uint program, uint textureHandle, uint vao, uint vbo, float displayDuration)
+    private SplashScreen(GL gl, uint program, uint bgTexture, uint textTexture, uint vao, uint vbo, float displayDuration)
     {
         _gl = gl;
         _program = program;
-        _textureHandle = textureHandle;
+        _bgTexture = bgTexture;
+        _textTexture = textTexture;
         _vao = vao;
         _vbo = vbo;
         _displayDuration = displayDuration;
@@ -54,7 +59,7 @@ internal sealed partial class SplashScreen : IDisposable
     public bool IsFinished => _elapsed >= _displayDuration;
 
     /// <summary>
-    /// Creates a splash screen from the splash image file.
+    /// Creates a splash screen, loading background and text textures from disk.
     /// </summary>
     /// <param name="gl">OpenGL context.</param>
     /// <param name="displayDuration">How long to show the splash in seconds.</param>
@@ -62,12 +67,13 @@ internal sealed partial class SplashScreen : IDisposable
     public static SplashScreen Create(GL gl, float displayDuration = 3f)
     {
         var program = CreateShaderProgram(gl);
-        var textureHandle = LoadTexture(gl, SplashPath);
+        var bgTexture = LoadTexture(gl, BgPath);
+        var textTexture = LoadTexture(gl, TextPath);
         var (vao, vbo) = CreateQuad(gl);
 
         Log.Information(Resources.Strings.Splash_Created);
 
-        return new SplashScreen(gl, program, textureHandle, vao, vbo, displayDuration);
+        return new SplashScreen(gl, program, bgTexture, textTexture, vao, vbo, displayDuration);
     }
 
     /// <summary>
@@ -79,11 +85,12 @@ internal sealed partial class SplashScreen : IDisposable
         _elapsed += dt;
     }
 
-    /// <summary>Releases OpenGL resources.</summary>
+    /// <summary>Releases all OpenGL resources.</summary>
     public void Dispose()
     {
         _gl.DeleteProgram(_program);
-        _gl.DeleteTexture(_textureHandle);
+        _gl.DeleteTexture(_bgTexture);
+        _gl.DeleteTexture(_textTexture);
         _gl.DeleteVertexArray(_vao);
         _gl.DeleteBuffer(_vbo);
 

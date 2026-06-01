@@ -4,14 +4,14 @@ using Silk.NET.OpenGL;
 
 /// <summary>
 /// Contains the <see cref="SplashScreen.Render"/> method.
-/// Renders the splash with correct aspect ratio and letterboxing.
+/// Renders splash layers in order: background, stars, text.
+/// Each layer uses correct aspect ratio with letterboxing.
 /// </summary>
 internal sealed partial class SplashScreen
 {
     /// <summary>
-    /// Renders the splash image with correct aspect ratio and letterboxing.
-    /// Centers the 16:9 image within the current framebuffer, filling remaining
-    /// space with black bars.
+    /// Renders all splash layers: background, stars, and text.
+    /// Centers the 16:9 image within the current framebuffer with letterboxing.
     /// </summary>
     /// <param name="fbWidth">Framebuffer width in pixels.</param>
     /// <param name="fbHeight">Framebuffer height in pixels.</param>
@@ -44,13 +44,25 @@ internal sealed partial class SplashScreen
         }
 
         _gl.Viewport(vpX, vpY, (uint)vpW, (uint)vpH);
-
         _gl.UseProgram(_program);
 
+        // Layer 1: Background (gradient, nebula, orb)
         _gl.ActiveTexture(TextureUnit.Texture0);
-        _gl.BindTexture(TextureTarget.Texture2D, _textureHandle);
-
+        _gl.BindTexture(TextureTarget.Texture2D, _bgTexture);
         var texLoc = _gl.GetUniformLocation(_program, "uTexture");
+        _gl.Uniform1(texLoc, 0);
+
+        _gl.BindVertexArray(_vao);
+        _gl.DrawArrays(PrimitiveType.Triangles, 0, 6);
+
+        // Layer 2: Stars (GPU particles)
+        _gl.BindVertexArray(0);
+        RenderStars(_gl, _elapsed, fbWidth, fbHeight);
+
+        // Layer 3: Text (GRAVITON WORKS with glow)
+        _gl.Viewport(vpX, vpY, (uint)vpW, (uint)vpH);
+        _gl.UseProgram(_program);
+        _gl.BindTexture(TextureTarget.Texture2D, _textTexture);
         _gl.Uniform1(texLoc, 0);
 
         _gl.BindVertexArray(_vao);
@@ -58,7 +70,5 @@ internal sealed partial class SplashScreen
 
         _gl.BindVertexArray(0);
         _gl.UseProgram(0);
-
-        RenderStars(_gl, _elapsed);
     }
 }

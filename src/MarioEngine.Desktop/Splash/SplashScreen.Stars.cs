@@ -109,12 +109,21 @@ void main()
     /// <summary>Renders the background star layer over the splash image.</summary>
     /// <param name="gl">OpenGL context.</param>
     /// <param name="elapsed">Elapsed time in seconds for animation.</param>
-    private void RenderStars(GL gl, float elapsed)
+    /// <param name="fbWidth">Framebuffer width in pixels.</param>
+    /// <param name="fbHeight">Framebuffer height in pixels.</param>
+    private void RenderStars(GL gl, float elapsed, int fbWidth, int fbHeight)
     {
         if (!_starsInitialized)
         {
             InitializeStars(gl);
         }
+
+        // Restore full viewport for stars (splash viewport may be letterboxed)
+        gl.Viewport(0, 0, (uint)fbWidth, (uint)fbHeight);
+
+        gl.Enable(EnableCap.ProgramPointSize);
+        gl.Enable(EnableCap.Blend);
+        gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
         gl.UseProgram(_starProgram);
 
@@ -129,5 +138,7 @@ void main()
 
         gl.BindVertexArray(0);
         gl.UseProgram(0);
+        gl.Disable(EnableCap.Blend);
+        gl.Disable(EnableCap.ProgramPointSize);
     }
 }
