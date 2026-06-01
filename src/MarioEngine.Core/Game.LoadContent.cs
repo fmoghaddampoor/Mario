@@ -1,5 +1,7 @@
 namespace MarioEngine.Core;
 
+using Microsoft.Extensions.Logging;
+
 /// <summary>
 /// Contains the <see cref="LoadContent"/> method for the <see cref="Game"/> class.
 /// Called once after <see cref="Game.Initialize"/> to load game content.
@@ -12,5 +14,6 @@ public partial class Game
     /// </summary>
     public virtual void LoadContent()
     {
+        _logger.LogInformation("Game.LoadContent started");
     }
 }

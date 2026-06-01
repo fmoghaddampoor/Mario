@@ -14,6 +14,7 @@ public partial class Game
     /// </summary>
     public virtual void Shutdown()
     {
+        _logger.LogInformation("Game.Shutdown started");
         _logger.LogInformation("Game shutting down");
     }
 }
