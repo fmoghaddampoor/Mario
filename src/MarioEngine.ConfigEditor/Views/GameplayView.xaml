@@ -1,0 +1,39 @@
+<UserControl x:Class="MarioEngine.ConfigEditor.Views.GameplayView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel>
+        <Border Style="{StaticResource GroupBox}">
+            <StackPanel>
+                <TextBlock Text="GENERAL" FontSize="13" FontWeight="Bold" Foreground="#8899AA" Margin="0,0,0,10"/>
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="Splash Duration:" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <TextBox Text="{Binding SplashDuration}" Style="{StaticResource DarkTextBox}" Width="80" HorizontalAlignment="Left"/>
+                </Grid>
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="Difficulty:" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <ComboBox SelectedValue="{Binding Difficulty}" Style="{StaticResource DarkCombo}">
+                        <ComboBoxItem Content="Easy" Tag="Easy"/><ComboBoxItem Content="Normal" Tag="Normal" IsSelected="True"/><ComboBoxItem Content="Hard" Tag="Hard"/>
+                    </ComboBox>
+                </Grid>
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="Starting Lives:" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <TextBox Text="{Binding StartingLives}" Style="{StaticResource DarkTextBox}" Width="80" HorizontalAlignment="Left"/>
+                </Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="Language:" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <ComboBox SelectedValue="{Binding Language}" Style="{StaticResource DarkCombo}">
+                        <ComboBoxItem Content="English" Tag="en" IsSelected="True"/><ComboBoxItem Content="German" Tag="de"/>
+                        <ComboBoxItem Content="Japanese" Tag="ja"/><ComboBoxItem Content="French" Tag="fr"/><ComboBoxItem Content="Spanish" Tag="es"/>
+                    </ComboBox>
+                </Grid>
+            </StackPanel>
+        </Border>
+        <Border Style="{StaticResource GroupBox}">
+            <CheckBox Content="Show FPS Overlay (F3)" IsChecked="{Binding ShowFps}" Margin="0,4"/>
+        </Border>
+    </StackPanel>
+</UserControl>
