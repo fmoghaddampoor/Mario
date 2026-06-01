@@ -64,7 +64,7 @@ internal sealed partial class MarioWindow : IDisposable
     /// <returns>A configured MarioWindow ready to run.</returns>
     public static MarioWindow Create(string[] args, ILogger<MarioWindow> logger)
     {
-        var parsed = ParseArgs(args);
+        var parsed = CliArgParser.Parse(args);
         var options = WindowOptions.Default;
 
         options.Title = "Super Mario \u2014 v" + VersionInfo.Current;
@@ -123,45 +123,5 @@ internal sealed partial class MarioWindow : IDisposable
         _splash?.Dispose();
         _gl?.Dispose();
         _window.Dispose();
-    }
-
-    /// <summary>
-    /// Parses command-line arguments for window configuration.
-    /// </summary>
-    /// <param name="args">Command-line arguments array.</param>
-    /// <returns>Tuple of (fullscreen, width, height).</returns>
-    private static (bool Fullscreen, int Width, int Height) ParseArgs(string[] args)
-    {
-        var fullscreen = true;
-        var width = 1920;
-        var height = 1080;
-
-        for (var i = 0; i < args.Length; i++)
-        {
-            switch (args[i].ToUpperInvariant())
-            {
-                case "--WINDOWED":
-                case "-W":
-                    fullscreen = false;
-                    break;
-                case "--WIDTH":
-                    if (++i < args.Length && int.TryParse(args[i], out var w))
-                    {
-                        width = w;
-                    }
-
-                    break;
-                case "--HEIGHT":
-                case "-H":
-                    if (++i < args.Length && int.TryParse(args[i], out var h))
-                    {
-                        height = h;
-                    }
-
-                    break;
-            }
-        }
-
-        return (fullscreen, width, height);
     }
 }
