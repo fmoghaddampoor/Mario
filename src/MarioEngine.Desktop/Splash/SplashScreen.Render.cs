@@ -53,6 +53,12 @@ internal sealed partial class SplashScreen
         var texLoc = _gl.GetUniformLocation(_program, "uTexture");
         _gl.Uniform1(texLoc, 0);
 
+        var timeLoc = _gl.GetUniformLocation(_program, "uTime");
+        _gl.Uniform1(timeLoc, _elapsed);
+
+        var twinkleLoc = _gl.GetUniformLocation(_program, "uTwinkle");
+        _gl.Uniform1(twinkleLoc, 1f);
+
         _gl.BindVertexArray(_vao);
         _gl.DrawArrays(PrimitiveType.Triangles, 0, 6);
 

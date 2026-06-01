@@ -25,9 +25,23 @@ void main()
 in vec2 vTexCoord;
 out vec4 FragColor;
 uniform sampler2D uTexture;
+uniform float uTime;
+uniform float uTwinkle;
+
 void main()
 {
-    FragColor = texture(uTexture, vTexCoord);
+    vec4 color = texture(uTexture, vTexCoord);
+
+    // Only very bright pixels (stars, not nebula) get a subtle twinkle
+    float lum = dot(color.rgb, vec3(0.299, 0.587, 0.114));
+    if (lum > 0.75)
+    {
+        float phase = sin(vTexCoord.x * 137.0 + vTexCoord.y * 73.0) * 0.5 + 0.5;
+        float twinkle = 0.88 + 0.12 * sin(uTime * (2.0 + phase * 3.0) + phase * 6.28);
+        color.rgb *= mix(1.0, twinkle, uTwinkle);
+    }
+
+    FragColor = color;
 }";
 
     /// <summary>
