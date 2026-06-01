@@ -66,11 +66,7 @@ internal sealed class MarioWindow : IDisposable
             new APIVersion(4, 6));
 
         var nativeWindow = Window.Create(options);
-
-        if (parsed.Fullscreen)
-        {
-            nativeWindow.WindowState = WindowState.Fullscreen;
-        }
+        nativeWindow.WindowState = WindowState.Fullscreen;
 
         var marioWindow = new MarioWindow(nativeWindow, logger);
 
@@ -177,20 +173,19 @@ internal sealed class MarioWindow : IDisposable
     /// <returns>Tuple of (fullscreen, width, height).</returns>
     private static (bool Fullscreen, int Width, int Height) ParseArgs(string[] args)
     {
-        var fullscreen = false;
-        var width = 1280;
-        var height = 720;
+        var fullscreen = true;
+        var width = 1920;
+        var height = 1080;
 
         for (var i = 0; i < args.Length; i++)
         {
             switch (args[i].ToUpperInvariant())
             {
-                case "--FULLSCREEN":
-                case "-F":
-                    fullscreen = true;
+                case "--WINDOWED":
+                case "-W":
+                    fullscreen = false;
                     break;
                 case "--WIDTH":
-                case "-W":
                     if (++i < args.Length && int.TryParse(args[i], out var w))
                     {
                         width = w;
