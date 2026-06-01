@@ -33,7 +33,7 @@
 
 ## 3. Documentation
 
-- Every member must have an XML doc comment (`/// <summary>`), including private fields and constants
+- Every member must have an XML doc comment (`/// <summary>`), including private fields, private constants, and private readonly fields
 - Every method parameter must have a `<param>` tag
 - Every return value must have a `<returns>` tag
 - Every thrown exception must have an `<exception>` tag
