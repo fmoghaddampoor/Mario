@@ -6,7 +6,7 @@ uniform float uTime;
 void main()
 {
     vec4 color = texture(uTexture, vTexCoord);
-    float pulse = 0.7 + 0.3 * sin(uTime * 1.5 + vTexCoord.x * 100.0 + vTexCoord.y * 80.0);
+    float pulse = 0.3 + 0.7 * (0.5 + 0.5 * sin(uTime * 2.0 + vTexCoord.x * 200.0 + vTexCoord.y * 150.0));
     color.rgb *= pulse;
     FragColor = color;
 }
