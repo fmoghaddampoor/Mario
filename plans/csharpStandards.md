@@ -20,7 +20,7 @@
 | Enum values | PascalCase | `PlayerState.Running` |
 | Async methods | `XxxAsync` suffix | `LoadLevelAsync()` |
 | File name | Must match class name | `SpriteBatcher.cs` |
-| One class per file | Yes | No nested classes; each class/interface/struct in its own file |
+| One class per file | Yes | No nested classes; each class/interface/struct/enum in its own file |
 
 ## 2. Style
 
@@ -38,6 +38,7 @@
 - Every return value must have a `<returns>` tag
 - Every thrown exception must have an `<exception>` tag
 - No copyright/file headers at the top of .cs files
+- After completing any task, the agent must scan all modified/new .cs files and verify every private field, private const, and private readonly field has an XML doc comment
 
 ```csharp
 /// <summary>Maximum walk speed in pixels per second.</summary>
