@@ -4,13 +4,14 @@ using Silk.NET.OpenGL;
 
 /// <summary>
 /// Contains the <see cref="SplashScreen.Render"/> method.
-/// Renders splash layers in order: background, stars, text.
-/// Each layer uses correct aspect ratio with letterboxing.
+/// Renders splash layers in order: background → animated stars → text.
+/// Background has subtle nebula rotation; stars pulse with time.
 /// </summary>
 internal sealed partial class SplashScreen
 {
     /// <summary>
-    /// Renders all splash layers: background, stars, and text.
+    /// Renders all splash layers: rotating nebula background,
+    /// pulsing star field, and static text overlay.
     /// Centers the 16:9 image within the current framebuffer with letterboxing.
     /// </summary>
     /// <param name="fbWidth">Framebuffer width in pixels.</param>
@@ -46,26 +47,36 @@ internal sealed partial class SplashScreen
         _gl.Viewport(vpX, vpY, (uint)vpW, (uint)vpH);
         _gl.UseProgram(_program);
 
-        // Layer 1: Background (gradient, nebula, orb)
+        // Layer 1: Rotating nebula background
         _gl.ActiveTexture(TextureUnit.Texture0);
         _gl.BindTexture(TextureTarget.Texture2D, _bgTexture);
         var texLoc = _gl.GetUniformLocation(_program, "uTexture");
         _gl.Uniform1(texLoc, 0);
+        var timeLoc = _gl.GetUniformLocation(_program, "uTime");
+        _gl.Uniform1(timeLoc, _elapsed);
 
         _gl.BindVertexArray(_vao);
         _gl.DrawArrays(PrimitiveType.Triangles, 0, 6);
 
-        // Layer 2: Stars (GPU particles)
-        _gl.BindVertexArray(0);
-        RenderStars(_gl, _elapsed, fbWidth, fbHeight);
-
-        // Layer 3: Text (GRAVITON WORKS with glow, overlaid with blending)
-        _gl.Viewport(vpX, vpY, (uint)vpW, (uint)vpH);
+        // Layer 2: Pulsing stars (rendered with blending)
         _gl.Enable(EnableCap.Blend);
         _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-        _gl.UseProgram(_program);
+        _gl.BindTexture(TextureTarget.Texture2D, _starTexture);
+        _gl.Uniform1(texLoc, 0);
+
+        // Stars pulse: use a faster time multiplier for visible twinkle
+        var starTime = _elapsed * 2.5f;
+        _gl.Uniform1(timeLoc, starTime);
+
+        _gl.BindVertexArray(_vao);
+        _gl.DrawArrays(PrimitiveType.Triangles, 0, 6);
+
+        // Layer 3: Text overlay
         _gl.BindTexture(TextureTarget.Texture2D, _textTexture);
         _gl.Uniform1(texLoc, 0);
+
+        // Text doesn't animate, but the shader applies uTime anyway (no visible effect on solid white)
+        _gl.Uniform1(timeLoc, 0f);
 
         _gl.BindVertexArray(_vao);
         _gl.DrawArrays(PrimitiveType.Triangles, 0, 6);

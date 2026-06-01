@@ -6,6 +6,7 @@ using Silk.NET.OpenGL;
 
 /// <summary>
 /// Contains shader compilation methods for the <see cref="SplashScreen"/> class.
+/// Shaders support uTime uniform for nebula rotation and star pulsing.
 /// </summary>
 internal sealed partial class SplashScreen
 {
@@ -25,9 +26,24 @@ void main()
 in vec2 vTexCoord;
 out vec4 FragColor;
 uniform sampler2D uTexture;
+uniform float uTime;
+
 void main()
 {
-    FragColor = texture(uTexture, vTexCoord);
+    vec2 uv = vTexCoord;
+
+    // Subtle nebula rotation and drift
+    float rotX = sin(uTime * 0.15 + uv.y * 0.5) * 0.008;
+    float rotY = cos(uTime * 0.12 + uv.x * 0.5) * 0.008;
+    uv += vec2(rotX, rotY);
+
+    vec4 color = texture(uTexture, uv);
+
+    // Stars pulse: modulate brightness of star texture with a gentle shimmer
+    float shimmer = 0.85 + 0.15 * sin(uTime * 1.5 + uv.x * 200.0 + uv.y * 170.0);
+    color.rgb *= shimmer;
+
+    FragColor = color;
 }";
 
     /// <summary>
