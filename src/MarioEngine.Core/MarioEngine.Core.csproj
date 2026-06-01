@@ -6,6 +6,7 @@
     <None Include="Graphics/Shader/default.vert" CopyToOutputDirectory="PreserveNewest" />
     <None Include="Graphics/Shader/default.frag" CopyToOutputDirectory="PreserveNewest" />
     <None Include="Graphics/PostProcessing/Shaders/*" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Graphics/Effects/Shaders/*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
