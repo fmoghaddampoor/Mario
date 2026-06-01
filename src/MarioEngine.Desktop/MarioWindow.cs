@@ -72,13 +72,7 @@ internal sealed partial class MarioWindow : IDisposable
 
         options.Title = Resources.Strings.Window_Title + VersionInfo.Current;
         options.Size = new Silk.NET.Maths.Vector2D<int>(parsed.Width, parsed.Height);
-        options.WindowBorder = parsed.Fullscreen ? WindowBorder.Hidden : WindowBorder.Resizable;
-        options.VSync = true;
-        options.API = new GraphicsAPI(
-            ContextAPI.OpenGL,
-            ContextProfile.Core,
-            ContextFlags.ForwardCompatible,
-            new APIVersion(4, 6));
+        GraphicsConfigurator.Configure(options, parsed.Fullscreen);
 
         var nativeWindow = Window.Create(options);
         nativeWindow.WindowState = WindowState.Fullscreen;

@@ -35,6 +35,7 @@ using System.IO;
 /// </summary>
 public sealed class IniConfig
 {
+    /// <summary>Parsed INI key-value pairs. Keys use Section_Key format, case-insensitive.</summary>
     private readonly Dictionary<string, string> _values;
 
     /// <summary>
