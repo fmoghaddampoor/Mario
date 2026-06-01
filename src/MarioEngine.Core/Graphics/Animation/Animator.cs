@@ -7,18 +7,39 @@ using System.Collections.Generic;
 /// Controls playback of animations. Supports play, stop, pause, resume,
 /// crossfade, speed multiplier, and frame-based events.
 /// </summary>
-public sealed class Animator
+public sealed partial class Animator
 {
+    /// <summary>Registered animation clips keyed by name.</summary>
     private readonly Dictionary<string, AnimationClip> _animations;
+
+    /// <summary>The currently playing animation clip.</summary>
     private AnimationClip? _currentAnimation;
+
+    /// <summary>The previous animation clip used for crossfade blending.</summary>
     private AnimationClip? _previousAnimation;
+
+    /// <summary>Elapsed time since the current frame started in seconds.</summary>
     private float _elapsed;
+
+    /// <summary>Time since crossfade started in seconds.</summary>
     private float _crossfadeTimer;
+
+    /// <summary>Total crossfade duration in seconds.</summary>
     private float _crossfadeDuration;
+
+    /// <summary>Index of the current frame being displayed.</summary>
     private int _currentFrameIndex;
+
+    /// <summary>True while an animation is actively playing.</summary>
     private bool _playing;
+
+    /// <summary>True if playback is paused.</summary>
     private bool _paused;
+
+    /// <summary>Playback speed multiplier. 1.0 = normal speed.</summary>
     private float _speed = 1f;
+
+    /// <summary>Frame event callbacks keyed by frame index.</summary>
     private Dictionary<int, Action> _events;
 
     /// <summary>Initializes a new instance of the <see cref="Animator"/> class.</summary>
@@ -89,129 +110,6 @@ public sealed class Animator
     {
         ArgumentNullException.ThrowIfNull(animation);
         _animations[animation.Name] = animation;
-    }
-
-    /// <summary>
-    /// Plays an animation by name. Optionally crossfades from the current animation.
-    /// </summary>
-    /// <param name="name">Animation name.</param>
-    /// <param name="crossfadeDuration">Crossfade duration in seconds. 0 for instant switch.</param>
-    public void Play(string name, float crossfadeDuration = 0.1f)
-    {
-        if (!_animations.TryGetValue(name, out var anim))
-        {
-            return;
-        }
-
-        if (_currentAnimation != null && crossfadeDuration > 0f)
-        {
-            _previousAnimation = _currentAnimation;
-            _crossfadeTimer = 0f;
-            _crossfadeDuration = crossfadeDuration;
-        }
-        else
-        {
-            _previousAnimation = null;
-            _crossfadeTimer = _crossfadeDuration = 0f;
-        }
-
-        _currentAnimation = anim;
-        _currentFrameIndex = 0;
-        _elapsed = 0f;
-        _playing = true;
-        _paused = false;
-        HasFinished = false;
-    }
-
-    /// <summary>Stops the current animation and resets to the first frame.</summary>
-    public void Stop()
-    {
-        _playing = false;
-        _paused = false;
-        _elapsed = 0f;
-        _currentFrameIndex = 0;
-        HasFinished = true;
-    }
-
-    /// <summary>Pauses the current animation.</summary>
-    public void Pause()
-    {
-        _paused = true;
-    }
-
-    /// <summary>Resumes the current animation from pause.</summary>
-    public void Resume()
-    {
-        _paused = false;
-    }
-
-    /// <summary>
-    /// Registers an event callback for a specific frame index.
-    /// </summary>
-    /// <param name="frameIndex">Frame index (0-based) when the event fires.</param>
-    /// <param name="callback">Action to invoke when reaching that frame.</param>
-    public void AddEvent(int frameIndex, Action callback)
-    {
-        _events[frameIndex] = callback;
-    }
-
-    /// <summary>Clears all registered events.</summary>
-    public void ClearEvents()
-    {
-        _events.Clear();
-    }
-
-    /// <summary>
-    /// Updates the animation state. Call once per frame.
-    /// </summary>
-    /// <param name="dt">Delta time in seconds.</param>
-    public void Update(float dt)
-    {
-        if (!_playing || _paused || _currentAnimation == null)
-        {
-            return;
-        }
-
-        var dtScaled = dt * _speed;
-
-        // Update crossfade
-        if (_crossfadeTimer < _crossfadeDuration)
-        {
-            _crossfadeTimer += dt;
-        }
-
-        // Advance frame timer
-        _elapsed += dtScaled;
-
-        var frame = _currentAnimation.Frames[_currentFrameIndex];
-        while (_elapsed >= frame.Duration)
-        {
-            _elapsed -= frame.Duration;
-            _currentFrameIndex++;
-
-            if (_currentFrameIndex >= _currentAnimation.Frames.Count)
-            {
-                if (_currentAnimation.Loop)
-                {
-                    _currentFrameIndex = 0;
-                }
-                else
-                {
-                    _currentFrameIndex = _currentAnimation.Frames.Count - 1;
-                    _playing = false;
-                    HasFinished = true;
-                    return;
-                }
-            }
-
-            // Fire frame event
-            if (_events.TryGetValue(_currentFrameIndex, out var evt))
-            {
-                evt();
-            }
-
-            frame = _currentAnimation.Frames[_currentFrameIndex];
-        }
     }
 
     /// <summary>Gets the UV coordinates for the current animation frame.</summary>
