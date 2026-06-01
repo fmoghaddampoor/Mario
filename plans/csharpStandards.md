@@ -31,14 +31,12 @@
 - **String formatting**: Use interpolation (`$"Health: {_health}"`); use StringBuilder in loops
 - **Nullables**: Enabled globally; annotate all public APIs with `?` where nullable; use `ArgumentNullException.ThrowIfNull()` for guards
 
-## 3. File Header
+## 3. Documentation
 
-Every .cs file must start with:
-```csharp
-// <copyright file="ClassName.cs" company="MarioGame">
-// Copyright (c) MarioGame. All rights reserved.
-// </copyright>
-```
+- Every public, protected, and internal member must have an XML doc comment (`/// <summary>`)
+- Use `<param>`, `<returns>`, `<exception>` tags where applicable
+- Internal members also require docs since CS1591 is enabled
+- No copyright/file headers at the top of .cs files
 
 ## 4. Usings
 
@@ -107,39 +105,33 @@ DON'T:
 - No lock contention (use double-buffered state)
 ```
 
-## 9. XML Documentation
-
-- All public and protected members must have XML doc comments
-- Summary required for: classes, interfaces, methods, properties, parameters, returns
-- Use `<param>`, `<returns>`, `<exception>` tags where applicable
-
-## 10. Async
+## 9. Async
 
 - `async void` only allowed for event handlers (fire-and-forget)
 - All Task-returning methods must end with `Async` suffix
 - Always await or explicitly fire-and-forget with error handling
 - Prefer `ValueTask` for high-frequency async methods to reduce allocation
 
-## 11. Tests
+## 10. Tests
 
 - Every public method should have unit tests: success path, failure path, edge cases
 - Test class name: `{ClassName}Tests`
 - Test method name: `{MethodName}_{Scenario}_Returns{Expected}`
 - Use NUnit or xUnit (follow project convention)
 
-## 12. Maximum Class Size
+## 11. Maximum Class Size
 
 - **Soft limit**: 300 lines per class (including braces, comments, blank lines)
 - **Hard limit**: 500 lines — anything over this must be refactored
 - **Exception**: Generated code, large switch expressions, or data-heavy builder classes (max 800 lines)
 - If a class exceeds 300 lines, split into smaller classes by responsibility
 
-## 13. File Organization
+## 12. File Organization
 
 ```
 File name = class name + .cs
 Folder structure mirrors namespace
-Header comment at top
+No copyright headers
 Usings inside namespace
 Members ordered: constants → fields → constructor → properties → methods → private methods
 ```

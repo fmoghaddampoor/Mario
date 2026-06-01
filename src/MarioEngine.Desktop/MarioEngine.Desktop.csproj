@@ -3,6 +3,10 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Silk.NET.Windowing" />
+    <PackageReference Include="Silk.NET.OpenGL" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\MarioEngine.Core\MarioEngine.Core.csproj" />
     <ProjectReference Include="..\MarioEngine.Game\MarioEngine.Game.csproj" />
   </ItemGroup>
