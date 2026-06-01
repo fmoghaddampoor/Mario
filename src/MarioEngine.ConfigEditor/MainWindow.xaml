@@ -9,6 +9,10 @@
         Background="#1A1A2E"
         FontFamily="Segoe UI, sans-serif"
         TextElement.Foreground="#E0E0E0">
+    <Window.Resources>
+        <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#16213E"/>
+        <SolidColorBrush x:Key="{x:Static SystemColors.WindowTextBrushKey}" Color="#E0E0E0"/>
+    </Window.Resources>
 
     <Grid Margin="16">
         <Grid.RowDefinitions>

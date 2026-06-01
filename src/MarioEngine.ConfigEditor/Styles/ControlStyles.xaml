@@ -29,7 +29,7 @@
         <Setter Property="BorderThickness" Value="1"/>
     </Style>
 
-    <!-- DarkCombo: dropdown selector with dark background -->
+    <!-- DarkCombo: dropdown selector with fully dark themed popup and items -->
     <Style x:Key="DarkCombo" TargetType="ComboBox">
         <Setter Property="Background" Value="#16213E"/>
         <Setter Property="BorderBrush" Value="#0F3460"/>
@@ -37,12 +37,14 @@
         <Setter Property="Width" Value="120"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="Padding" Value="6,4"/>
+        <Setter Property="TextElement.Foreground" Value="#E0E0E0"/>
+        <Setter Property="TextElement.Background" Value="#16213E"/>
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <Style TargetType="ComboBoxItem">
                     <Setter Property="Background" Value="#16213E"/>
-                    <Setter Property="Foreground" Value="#C0D0E0"/>
-                    <Setter Property="BorderBrush" Value="#0F3460"/>
+                    <Setter Property="Foreground" Value="#E0E0E0"/>
+                    <Setter Property="BorderThickness" Value="0"/>
                     <Setter Property="Padding" Value="6,4"/>
                     <Style.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
