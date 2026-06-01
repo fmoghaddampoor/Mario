@@ -20,16 +20,21 @@ internal sealed partial class MarioWindow : IDisposable
     /// <summary>Logger instance for window lifecycle events.</summary>
     private readonly ILogger<MarioWindow> _logger;
 
+    /// <summary>Splash display duration in seconds, from config.</summary>
+    private readonly float _splashDuration;
+
     /// <summary>Shared state for the splash-to-game startup transition.</summary>
     private GameStartupState? _startupState;
 
     /// <summary>Initializes a new instance of the <see cref="MarioWindow"/> class.</summary>
     /// <param name="window">The underlying Silk.NET window this instance wraps.</param>
     /// <param name="logger">Logger instance for window lifecycle events.</param>
-    private MarioWindow(IWindow window, ILogger<MarioWindow> logger)
+    /// <param name="splashDuration">Number of seconds to display the splash screen.</param>
+    private MarioWindow(IWindow window, ILogger<MarioWindow> logger, float splashDuration)
     {
         _window = window;
         _logger = logger;
+        _splashDuration = splashDuration;
     }
 
     /// <summary>Occurs when the window or framebuffer is resized.</summary>
@@ -58,8 +63,9 @@ internal sealed partial class MarioWindow : IDisposable
     /// </summary>
     /// <param name="args">Command-line arguments from Main().</param>
     /// <param name="logger">Logger instance.</param>
+    /// <param name="splashDuration">Number of seconds to display the splash screen.</param>
     /// <returns>A configured MarioWindow ready to run.</returns>
-    public static MarioWindow Create(string[] args, ILogger<MarioWindow> logger)
+    public static MarioWindow Create(string[] args, ILogger<MarioWindow> logger, float splashDuration = 3f)
     {
         var parsed = CliArgParser.Parse(args);
         var options = WindowOptions.Default;
@@ -77,7 +83,7 @@ internal sealed partial class MarioWindow : IDisposable
         var nativeWindow = Window.Create(options);
         nativeWindow.WindowState = WindowState.Fullscreen;
 
-        var marioWindow = new MarioWindow(nativeWindow, logger);
+        var marioWindow = new MarioWindow(nativeWindow, logger, splashDuration);
 
         nativeWindow.Load += new MarioWindowInitializer(
             nativeWindow, marioWindow, logger, parsed.Width, parsed.Height).HandleLoad;
@@ -113,7 +119,7 @@ internal sealed partial class MarioWindow : IDisposable
     {
         if (_startupState != null)
         {
-            _startupState.Splash = SplashScreen.Create(this.GL);
+            _startupState.Splash = SplashScreen.Create(this.GL, _splashDuration);
         }
     }
 }

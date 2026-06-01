@@ -7,6 +7,7 @@
   <ItemGroup>
     <None Include="game.ico" CopyToOutputDirectory="PreserveNewest" />
     <None Include="splash.png" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="app.ini" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Silk.NET.Windowing" />

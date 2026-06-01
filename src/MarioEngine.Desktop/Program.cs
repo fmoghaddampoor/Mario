@@ -1,7 +1,9 @@
 namespace MarioEngine.Desktop;
 
 using System;
+using System.IO;
 using MarioEngine.Core;
+using MarioEngine.Core.Config;
 using MarioEngine.Core.DependencyInjection;
 using MarioEngine.Core.Logging;
 using MarioEngine.Desktop.Resources;
@@ -18,10 +20,17 @@ internal static class Program
     /// <param name="args">Command-line arguments.</param>
     public static void Main(string[] args)
     {
+        var iniPath = Path.Combine(AppContext.BaseDirectory, "app.ini");
+        var config = File.Exists(iniPath) ? IniConfig.Load(iniPath) : null;
+
+        var seqUrl = config?.GetString("Logging", "SeqUrl");
+        var lokiUrl = config?.GetString("Logging", "LokiUrl");
+        var splashDuration = config?.GetFloat("Splash", "Duration", 3f) ?? 3f;
+
         using var logCloser = LogConfiguration.Initialize(
             logDirectory: "logs",
-            seqUrl: null,
-            lokiUrl: null,
+            seqUrl: string.IsNullOrEmpty(seqUrl) ? null : new Uri(seqUrl),
+            lokiUrl: string.IsNullOrEmpty(lokiUrl) ? null : new Uri(lokiUrl),
             applicationName: "MarioGame");
 
         try
@@ -30,7 +39,7 @@ internal static class Program
             var game = services.Get<Game>();
             var logger = services.Get<ILogger<MarioWindow>>();
 
-            using var marioWindow = MarioWindow.Create(args, logger);
+            using var marioWindow = MarioWindow.Create(args, logger, splashDuration);
             marioWindow.WireGameEvents(game);
             marioWindow.Run();
         }

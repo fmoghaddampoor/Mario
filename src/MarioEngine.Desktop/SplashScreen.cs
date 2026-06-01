@@ -13,7 +13,6 @@ using StbImageSharp;
 /// </summary>
 internal sealed class SplashScreen : IDisposable
 {
-    private const float DisplayDuration = 3f;
     private const string VertexShaderSource = @"
 #version 460
 layout(location = 0) in vec2 aPosition;
@@ -53,27 +52,32 @@ void main()
     /// <summary>Handle to the vertex buffer object for the quad vertex data.</summary>
     private readonly uint _vbo;
 
+    /// <summary>How long the splash screen is displayed in seconds.</summary>
+    private readonly float _displayDuration;
+
     /// <summary>Elapsed time in seconds since the splash screen started displaying.</summary>
     private float _elapsed;
 
-    private SplashScreen(GL gl, uint program, uint textureHandle, uint vao, uint vbo)
+    private SplashScreen(GL gl, uint program, uint textureHandle, uint vao, uint vbo, float displayDuration)
     {
         _gl = gl;
         _program = program;
         _textureHandle = textureHandle;
         _vao = vao;
         _vbo = vbo;
+        _displayDuration = displayDuration;
     }
 
     /// <summary>Gets a value indicating whether the splash duration has elapsed.</summary>
-    public bool IsFinished => _elapsed >= DisplayDuration;
+    public bool IsFinished => _elapsed >= _displayDuration;
 
     /// <summary>
     /// Creates a splash screen from the splash image file.
     /// </summary>
     /// <param name="gl">OpenGL context.</param>
+    /// <param name="displayDuration">How long to show the splash in seconds.</param>
     /// <returns>A configured SplashScreen ready to render.</returns>
-    public static SplashScreen Create(GL gl)
+    public static SplashScreen Create(GL gl, float displayDuration = 3f)
     {
         var program = CreateShaderProgram(gl);
         var textureHandle = LoadTexture(gl, SplashPath);
@@ -81,7 +85,7 @@ void main()
 
         Log.Information(Resources.Strings.Splash_Created);
 
-        return new SplashScreen(gl, program, textureHandle, vao, vbo);
+        return new SplashScreen(gl, program, textureHandle, vao, vbo, displayDuration);
     }
 
     /// <summary>
