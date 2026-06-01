@@ -21,7 +21,7 @@ internal sealed partial class MarioWindow
 
         var loadHandler = new MarioWindowLoadHandler(this);
         var updateHandler = new MarioWindowUpdateHandler(game, state, _logger);
-        var renderHandler = new MarioWindowRenderHandler(game, state);
+        var renderHandler = new MarioWindowRenderHandler(this, game, state);
         var closingHandler = new MarioWindowClosingHandler(game);
 
         _window.Load += loadHandler.Handle;

@@ -9,7 +9,8 @@ using StbImageSharp;
 
 /// <summary>
 /// Displays a splash screen image for a fixed duration using OpenGL.
-/// Shows a spectacular cosmic scene for 3 seconds at startup.
+/// Shows a spectacular cosmic scene for a configurable duration at startup.
+/// Renders with correct aspect ratio and letterboxing on any display.
 /// </summary>
 internal sealed class SplashScreen : IDisposable
 {
@@ -33,6 +34,8 @@ void main()
 {
     FragColor = texture(uTexture, vTexCoord);
 }";
+
+    private const float ImageAspectRatio = 1920f / 1080f;
 
     private static readonly string SplashPath = Path.Combine(
         AppContext.BaseDirectory, "splash.png");
@@ -98,12 +101,41 @@ void main()
     }
 
     /// <summary>
-    /// Renders the splash image as a full-screen quad using a shader program.
+    /// Renders the splash image with correct aspect ratio and letterboxing.
+    /// Centers the 16:9 image within the current framebuffer, filling remaining
+    /// space with black bars.
     /// </summary>
-    public void Render()
+    /// <param name="fbWidth">Framebuffer width in pixels.</param>
+    /// <param name="fbHeight">Framebuffer height in pixels.</param>
+    public void Render(int fbWidth, int fbHeight)
     {
         _gl.ClearColor(0f, 0f, 0f, 1f);
         _gl.Clear(ClearBufferMask.ColorBufferBit);
+
+        if (fbWidth < 1 || fbHeight < 1)
+        {
+            return;
+        }
+
+        var fbAspect = (float)fbWidth / fbHeight;
+        int vpX, vpY, vpW, vpH;
+
+        if (fbAspect > ImageAspectRatio)
+        {
+            vpH = fbHeight;
+            vpW = (int)(fbHeight * ImageAspectRatio);
+            vpX = (int)((fbWidth - vpW) / 2f);
+            vpY = 0;
+        }
+        else
+        {
+            vpW = fbWidth;
+            vpH = (int)(fbWidth / ImageAspectRatio);
+            vpX = 0;
+            vpY = (int)((fbHeight - vpH) / 2f);
+        }
+
+        _gl.Viewport(vpX, vpY, (uint)vpW, (uint)vpH);
 
         _gl.UseProgram(_program);
 
