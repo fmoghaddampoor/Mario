@@ -25,33 +25,9 @@ void main()
 in vec2 vTexCoord;
 out vec4 FragColor;
 uniform sampler2D uTexture;
-uniform float uTime;
-
 void main()
 {
-    vec4 color = texture(uTexture, vTexCoord);
-    float lum = dot(color.rgb, vec3(0.299, 0.587, 0.114));
-
-    // Stars twinkle: bright pixels (lum > 0.6) pulse with sine wave
-    // Each pixel gets a unique phase from its screen position for natural randomness
-    if (lum > 0.6)
-    {
-        float twinkle = 0.7 + 0.3 * sin(uTime * 3.0 + vTexCoord.x * 50.0 + vTexCoord.y * 73.0);
-        color.rgb *= twinkle;
-
-        // Fade in stars at the edge of visibility for a shimmering effect
-        float shimmer = sin(uTime * 5.0 + vTexCoord.x * 100.0 + vTexCoord.y * 137.0);
-        shimmer = clamp(shimmer * 0.5 + 0.5, 0.3, 1.0);
-        color.rgb *= mix(1.0, shimmer, smoothstep(0.6, 0.9, lum));
-    }
-    // Nebula/mist (mid-range luminance) slowly pulses
-    else if (lum > 0.15)
-    {
-        float pulse = 0.95 + 0.05 * sin(uTime * 0.5 + vTexCoord.x * 10.0 + vTexCoord.y * 7.0);
-        color.rgb *= pulse;
-    }
-
-    FragColor = color;
+    FragColor = texture(uTexture, vTexCoord);
 }";
 
     /// <summary>
