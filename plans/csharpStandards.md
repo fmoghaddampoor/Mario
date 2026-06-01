@@ -127,7 +127,14 @@ DON'T:
 - Test method name: `{MethodName}_{Scenario}_Returns{Expected}`
 - Use NUnit or xUnit (follow project convention)
 
-## 12. File Organization
+## 12. Maximum Class Size
+
+- **Soft limit**: 300 lines per class (including braces, comments, blank lines)
+- **Hard limit**: 500 lines — anything over this must be refactored
+- **Exception**: Generated code, large switch expressions, or data-heavy builder classes (max 800 lines)
+- If a class exceeds 300 lines, split into smaller classes by responsibility
+
+## 13. File Organization
 
 ```
 File name = class name + .cs
