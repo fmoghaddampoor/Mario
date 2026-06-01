@@ -69,7 +69,7 @@ internal sealed partial class MarioWindow : IDisposable
     {
         var parsed = CliArgParser.Parse(args);
         var options = WindowOptions.Default;
-        GraphicsConfigurator.Configure(options, parsed.Width, parsed.Height, parsed.Fullscreen);
+        GraphicsConfigurator.Configure(options, parsed);
 
         var nativeWindow = Window.Create(options);
         nativeWindow.WindowState = WindowState.Fullscreen;

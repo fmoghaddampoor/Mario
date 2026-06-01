@@ -14,14 +14,12 @@ internal static class GraphicsConfigurator
     /// Applies all graphics and window configuration to the given options.
     /// </summary>
     /// <param name="options">The window options to configure.</param>
-    /// <param name="width">Window width in pixels.</param>
-    /// <param name="height">Window height in pixels.</param>
-    /// <param name="fullscreen">Whether to start in fullscreen mode.</param>
-    public static void Configure(WindowOptions options, int width, int height, bool fullscreen)
+    /// <param name="parsed">Parsed CLI arguments with width, height, and fullscreen flag.</param>
+    public static void Configure(WindowOptions options, (bool Fullscreen, int Width, int Height) parsed)
     {
         options.Title = Resources.Strings.Window_Title + VersionInfo.Current;
-        options.Size = new Silk.NET.Maths.Vector2D<int>(width, height);
-        options.WindowBorder = fullscreen ? WindowBorder.Hidden : WindowBorder.Resizable;
+        options.Size = new Silk.NET.Maths.Vector2D<int>(parsed.Width, parsed.Height);
+        options.WindowBorder = parsed.Fullscreen ? WindowBorder.Hidden : WindowBorder.Resizable;
         options.VSync = true;
         options.API = new GraphicsAPI(
             ContextAPI.OpenGL,
