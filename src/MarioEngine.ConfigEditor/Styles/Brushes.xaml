@@ -1,0 +1,48 @@
+<!-- Centralized color palette for the configurator dark theme.
+     All SolidColorBrushes are frozen for performance.
+     Reference these in other style files using {StaticResource BrushName}. -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+                    mc:Ignorable="po"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+
+    <!-- Background colors -->
+    <SolidColorBrush x:Key="BgDarkest" Color="#1A1A2E" po:Freeze="True"/>
+    <SolidColorBrush x:Key="BgDark" Color="#16213E" po:Freeze="True"/>
+    <SolidColorBrush x:Key="BgMid" Color="#0F3460" po:Freeze="True"/>
+    <SolidColorBrush x:Key="BgInput" Color="#1A1A2E" po:Freeze="True"/>
+    <SolidColorBrush x:Key="BgHover" Color="#1A3A6A" po:Freeze="True"/>
+    <SolidColorBrush x:Key="BgHighlight" Color="#2A4A7A" po:Freeze="True"/>
+
+    <!-- Accent colors -->
+    <SolidColorBrush x:Key="AccentRed" Color="#E94560" po:Freeze="True"/>
+    <SolidColorBrush x:Key="AccentRedHover" Color="#FF6B81" po:Freeze="True"/>
+    <SolidColorBrush x:Key="AccentRedPressed" Color="#C0392B" po:Freeze="True"/>
+
+    <!-- Text colors -->
+    <SolidColorBrush x:Key="TextPrimary" Color="#E0E0E0" po:Freeze="True"/>
+    <SolidColorBrush x:Key="TextSecondary" Color="#8899AA" po:Freeze="True"/>
+    <SolidColorBrush x:Key="TextSubdued" Color="#667799" po:Freeze="True"/>
+    <SolidColorBrush x:Key="TextWhite" Color="White" po:Freeze="True"/>
+
+    <!-- Border colors -->
+    <SolidColorBrush x:Key="BorderDefault" Color="#0F3460" po:Freeze="True"/>
+    <SolidColorBrush x:Key="BorderAccent" Color="#E94560" po:Freeze="True"/>
+
+    <!-- Tab colors -->
+    <SolidColorBrush x:Key="TabInactiveBg" Color="#16213E" po:Freeze="True"/>
+    <SolidColorBrush x:Key="TabInactiveFg" Color="#8899AA" po:Freeze="True"/>
+    <SolidColorBrush x:Key="TabInactiveBorder" Color="#0F3460" po:Freeze="True"/>
+    <SolidColorBrush x:Key="TabActiveBg" Color="#1A1A2E" po:Freeze="True"/>
+    <SolidColorBrush x:Key="TabActiveFg" Color="#E94560" po:Freeze="True"/>
+    <SolidColorBrush x:Key="TabActiveBorder" Color="#E94560" po:Freeze="True"/>
+
+    <!-- Button colors -->
+    <SolidColorBrush x:Key="BtnSecondaryBg" Color="#333355" po:Freeze="True"/>
+
+    <!-- ComboBox colors -->
+    <SolidColorBrush x:Key="ComboItemFg" Color="#C0D0E0" po:Freeze="True"/>
+    <SolidColorBrush x:Key="ComboArrow" Color="#8899AA" po:Freeze="True"/>
+
+</ResourceDictionary>
