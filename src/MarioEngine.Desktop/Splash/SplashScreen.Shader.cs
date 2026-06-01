@@ -5,8 +5,9 @@ using MarioEngine.Desktop.Resources;
 using Silk.NET.OpenGL;
 
 /// <summary>
-/// Contains shader compilation methods for the <see cref="SplashScreen"/> class.
-/// Shaders support uTime uniform for nebula rotation and star pulsing.
+/// Contains shader sources and compilation for the SplashScreen.
+/// Nebula shader: applies subtle UV rotation over time.
+/// Static shader: simple texture passthrough (no effects).
 /// </summary>
 internal sealed partial class SplashScreen
 {
@@ -27,34 +28,29 @@ in vec2 vTexCoord;
 out vec4 FragColor;
 uniform sampler2D uTexture;
 uniform float uTime;
-
 void main()
 {
     vec2 uv = vTexCoord;
-
-    // Subtle nebula rotation and drift
-    float rotX = sin(uTime * 0.15 + uv.y * 0.5) * 0.008;
-    float rotY = cos(uTime * 0.12 + uv.x * 0.5) * 0.008;
-    uv += vec2(rotX, rotY);
-
-    vec4 color = texture(uTexture, uv);
-
-    // Stars pulse: modulate brightness of star texture with a gentle shimmer
-    float shimmer = 0.85 + 0.15 * sin(uTime * 1.5 + uv.x * 200.0 + uv.y * 170.0);
-    color.rgb *= shimmer;
-
-    FragColor = color;
+    // Subtle nebula drift: slow sine-based offset
+    uv.x += sin(uTime * 0.15 + uv.y * 3.0) * 0.006;
+    uv.y += cos(uTime * 0.12 + uv.x * 3.0) * 0.006;
+    FragColor = texture(uTexture, uv);
 }";
 
-    /// <summary>
-    /// Creates a shader program by compiling vertex and fragment shaders and linking them.
-    /// </summary>
-    /// <param name="gl">OpenGL context.</param>
-    /// <returns>Handle to the compiled and linked shader program.</returns>
     private static uint CreateShaderProgram(GL gl)
     {
-        var vertex = LoadShader(gl, ShaderType.VertexShader, VertexShaderSource);
-        var fragment = LoadShader(gl, ShaderType.FragmentShader, FragmentShaderSource);
+        return CreateShaderProgram(gl, VertexShaderSource, FragmentShaderSource);
+    }
+
+    private static uint CreateShaderProgram(GL gl, string vertexSource, string fragmentSource)
+    {
+        var vertex = gl.CreateShader(ShaderType.VertexShader);
+        gl.ShaderSource(vertex, vertexSource);
+        gl.CompileShader(vertex);
+
+        var fragment = gl.CreateShader(ShaderType.FragmentShader);
+        gl.ShaderSource(fragment, fragmentSource);
+        gl.CompileShader(fragment);
 
         var program = gl.CreateProgram();
         gl.AttachShader(program, vertex);
@@ -74,28 +70,5 @@ void main()
         gl.DeleteShader(fragment);
 
         return program;
-    }
-
-    /// <summary>
-    /// Compiles a single shader from source code.
-    /// </summary>
-    /// <param name="gl">OpenGL context.</param>
-    /// <param name="type">Type of shader to compile.</param>
-    /// <param name="source">GLSL source code.</param>
-    /// <returns>Handle to the compiled shader.</returns>
-    private static uint LoadShader(GL gl, ShaderType type, string source)
-    {
-        var shader = gl.CreateShader(type);
-        gl.ShaderSource(shader, source);
-        gl.CompileShader(shader);
-
-        gl.GetShader(shader, ShaderParameterName.CompileStatus, out var success);
-        if (success == 0)
-        {
-            var info = gl.GetShaderInfoLog(shader);
-            throw new InvalidOperationException(string.Format(Resources.Strings.Shader_CompileFailed, type, info));
-        }
-
-        return shader;
     }
 }
