@@ -8,23 +8,46 @@ using StbImageSharp;
 
 /// <summary>
 /// Displays a splash screen image for a fixed duration using OpenGL.
-/// Shows "Graviton Works" branding on a black background for 3 seconds at startup.
+/// Shows a spectacular cosmic scene for 3 seconds at startup.
 /// </summary>
 internal sealed class SplashScreen : IDisposable
 {
     private const float DisplayDuration = 3f;
-    private static readonly string SplashPath = System.IO.Path.Combine(
-        System.AppContext.BaseDirectory, "splash.png");
+    private const string VertexShaderSource = @"
+#version 460
+layout(location = 0) in vec2 aPosition;
+layout(location = 1) in vec2 aTexCoord;
+out vec2 vTexCoord;
+void main()
+{
+    gl_Position = vec4(aPosition, 0.0, 1.0);
+    vTexCoord = aTexCoord;
+}";
+
+    private const string FragmentShaderSource = @"
+#version 460
+in vec2 vTexCoord;
+out vec4 FragColor;
+uniform sampler2D uTexture;
+void main()
+{
+    FragColor = texture(uTexture, vTexCoord);
+}";
+
+    private static readonly string SplashPath = Path.Combine(
+        AppContext.BaseDirectory, "splash.png");
 
     private readonly GL _gl;
+    private readonly uint _program;
     private readonly uint _textureHandle;
     private readonly uint _vao;
     private readonly uint _vbo;
     private float _elapsed;
 
-    private SplashScreen(GL gl, uint textureHandle, uint vao, uint vbo)
+    private SplashScreen(GL gl, uint program, uint textureHandle, uint vao, uint vbo)
     {
         _gl = gl;
+        _program = program;
         _textureHandle = textureHandle;
         _vao = vao;
         _vbo = vbo;
@@ -40,12 +63,13 @@ internal sealed class SplashScreen : IDisposable
     /// <returns>A configured SplashScreen ready to render.</returns>
     public static SplashScreen Create(GL gl)
     {
+        var program = CreateShaderProgram(gl);
         var textureHandle = LoadTexture(gl, SplashPath);
         var (vao, vbo) = CreateQuad(gl);
 
         Log.Information("Splash screen created");
 
-        return new SplashScreen(gl, textureHandle, vao, vbo);
+        return new SplashScreen(gl, program, textureHandle, vao, vbo);
     }
 
     /// <summary>
@@ -58,27 +82,76 @@ internal sealed class SplashScreen : IDisposable
     }
 
     /// <summary>
-    /// Renders the splash image as a full-screen quad.
+    /// Renders the splash image as a full-screen quad using a shader program.
     /// </summary>
     public void Render()
     {
+        _gl.ClearColor(0f, 0f, 0f, 1f);
         _gl.Clear(ClearBufferMask.ColorBufferBit);
-        _gl.Enable(EnableCap.Texture2D);
+
+        _gl.UseProgram(_program);
+
+        _gl.ActiveTexture(TextureUnit.Texture0);
         _gl.BindTexture(TextureTarget.Texture2D, _textureHandle);
+
+        var texLoc = _gl.GetUniformLocation(_program, "uTexture");
+        _gl.Uniform1(texLoc, 0);
 
         _gl.BindVertexArray(_vao);
         _gl.DrawArrays(PrimitiveType.Triangles, 0, 6);
 
         _gl.BindVertexArray(0);
-        _gl.BindTexture(TextureTarget.Texture2D, 0);
+        _gl.UseProgram(0);
     }
 
     /// <summary>Releases OpenGL resources.</summary>
     public void Dispose()
     {
+        _gl.DeleteProgram(_program);
         _gl.DeleteTexture(_textureHandle);
         _gl.DeleteVertexArray(_vao);
         _gl.DeleteBuffer(_vbo);
+    }
+
+    private static uint CreateShaderProgram(GL gl)
+    {
+        var vertex = LoadShader(gl, ShaderType.VertexShader, VertexShaderSource);
+        var fragment = LoadShader(gl, ShaderType.FragmentShader, FragmentShaderSource);
+
+        var program = gl.CreateProgram();
+        gl.AttachShader(program, vertex);
+        gl.AttachShader(program, fragment);
+        gl.LinkProgram(program);
+
+        gl.GetProgram(program, ProgramPropertyARB.LinkStatus, out var success);
+        if (success == 0)
+        {
+            var info = gl.GetProgramInfoLog(program);
+            throw new InvalidOperationException($"Shader program link failed: {info}");
+        }
+
+        gl.DetachShader(program, vertex);
+        gl.DetachShader(program, fragment);
+        gl.DeleteShader(vertex);
+        gl.DeleteShader(fragment);
+
+        return program;
+    }
+
+    private static uint LoadShader(GL gl, ShaderType type, string source)
+    {
+        var shader = gl.CreateShader(type);
+        gl.ShaderSource(shader, source);
+        gl.CompileShader(shader);
+
+        gl.GetShader(shader, ShaderParameterName.CompileStatus, out var success);
+        if (success == 0)
+        {
+            var info = gl.GetShaderInfoLog(shader);
+            throw new InvalidOperationException($"Shader compile failed ({type}): {info}");
+        }
+
+        return shader;
     }
 
     private static uint LoadTexture(GL gl, string path)
