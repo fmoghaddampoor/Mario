@@ -8,7 +8,10 @@ using MarioEngine.Core;
 /// </summary>
 internal sealed class MarioWindowRenderHandler
 {
+    /// <summary>Game instance to render each frame.</summary>
     private readonly Game _game;
+
+    /// <summary>Shared startup state for splash-to-game transition.</summary>
     private readonly GameStartupState _state;
 
     /// <summary>Initializes a new instance of the <see cref="MarioWindowRenderHandler"/> class.</summary>

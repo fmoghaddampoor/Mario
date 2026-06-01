@@ -9,8 +9,13 @@ using Microsoft.Extensions.Logging;
 /// </summary>
 internal sealed class MarioWindowUpdateHandler
 {
+    /// <summary>Game instance to update each frame.</summary>
     private readonly Game _game;
+
+    /// <summary>Shared startup state for splash-to-game transition.</summary>
     private readonly GameStartupState _state;
+
+    /// <summary>Logger instance for startup transition events.</summary>
     private readonly ILogger<MarioWindow> _logger;
 
     /// <summary>Initializes a new instance of the <see cref="MarioWindowUpdateHandler"/> class.</summary>

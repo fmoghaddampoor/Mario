@@ -37,11 +37,22 @@ void main()
     private static readonly string SplashPath = Path.Combine(
         AppContext.BaseDirectory, "splash.png");
 
+    /// <summary>OpenGL context used for rendering the splash texture.</summary>
     private readonly GL _gl;
+
+    /// <summary>Handle to the compiled shader program for textured quad rendering.</summary>
     private readonly uint _program;
+
+    /// <summary>Handle to the OpenGL texture containing the splash image.</summary>
     private readonly uint _textureHandle;
+
+    /// <summary>Handle to the vertex array object for the full-screen quad.</summary>
     private readonly uint _vao;
+
+    /// <summary>Handle to the vertex buffer object for the quad vertex data.</summary>
     private readonly uint _vbo;
+
+    /// <summary>Elapsed time in seconds since the splash screen started displaying.</summary>
     private float _elapsed;
 
     private SplashScreen(GL gl, uint program, uint textureHandle, uint vao, uint vbo)

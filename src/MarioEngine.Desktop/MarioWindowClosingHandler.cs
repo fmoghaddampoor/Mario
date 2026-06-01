@@ -7,6 +7,7 @@ using MarioEngine.Core;
 /// </summary>
 internal sealed class MarioWindowClosingHandler
 {
+    /// <summary>Game instance to shut down when the window closes.</summary>
     private readonly Game _game;
 
     /// <summary>Initializes a new instance of the <see cref="MarioWindowClosingHandler"/> class.</summary>

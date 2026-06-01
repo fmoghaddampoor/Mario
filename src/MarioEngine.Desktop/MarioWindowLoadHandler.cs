@@ -7,6 +7,7 @@ using Serilog;
 /// </summary>
 internal sealed class MarioWindowLoadHandler
 {
+    /// <summary>MarioWindow instance providing the OpenGL context for the splash screen.</summary>
     private readonly MarioWindow _window;
 
     /// <summary>Initializes a new instance of the <see cref="MarioWindowLoadHandler"/> class.</summary>
