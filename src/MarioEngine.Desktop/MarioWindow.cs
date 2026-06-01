@@ -23,11 +23,8 @@ internal sealed partial class MarioWindow : IDisposable
     /// <summary>OpenGL context. Set during the window Load event.</summary>
     private GL? _gl;
 
-    /// <summary>Splash screen displayed on startup. Null after 3 seconds.</summary>
-    private SplashScreen? _splash;
-
-    /// <summary>True once splash finishes and game lifecycle begins.</summary>
-    private bool _gameStarted;
+    /// <summary>Shared state for the splash-to-game startup transition.</summary>
+    private GameStartupState? _startupState;
 
     /// <summary>Initializes a new instance of the <see cref="MarioWindow"/> class.</summary>
     /// <param name="window">The underlying Silk.NET window this instance wraps.</param>
@@ -120,8 +117,17 @@ internal sealed partial class MarioWindow : IDisposable
     /// <summary>Closes the window and cleans up resources.</summary>
     public void Dispose()
     {
-        _splash?.Dispose();
+        _startupState?.Splash?.Dispose();
         _gl?.Dispose();
         _window.Dispose();
+    }
+
+    /// <summary>Creates the splash screen and stores it in the startup state.</summary>
+    internal void CreateSplash()
+    {
+        if (_startupState != null)
+        {
+            _startupState.Splash = SplashScreen.Create(this.GL);
+        }
     }
 }

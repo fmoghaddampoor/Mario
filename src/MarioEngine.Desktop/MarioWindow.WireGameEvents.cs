@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 /// <summary>
 /// Contains the <see cref="MarioWindow.WireGameEvents"/> method for the <see cref="MarioWindow"/> class.
-/// Wires the game lifecycle to window events with a 3-second splash screen transition.
+/// Creates handler instances for each window event and subscribes them.
 /// </summary>
 internal sealed partial class MarioWindow
 {
@@ -16,49 +16,17 @@ internal sealed partial class MarioWindow
     /// <param name="game">The game instance to wire up.</param>
     public void WireGameEvents(Game game)
     {
-        _window.Load += () =>
-        {
-            _splash = SplashScreen.Create(this.GL);
-        };
+        var state = new GameStartupState();
+        _startupState = state;
 
-        _window.Update += (dt) =>
-        {
-            if (_gameStarted)
-            {
-                game.ProcessInput((float)dt);
-                game.Update((float)dt);
-                return;
-            }
+        var loadHandler = new MarioWindowLoadHandler(this);
+        var updateHandler = new MarioWindowUpdateHandler(game, state, _logger);
+        var renderHandler = new MarioWindowRenderHandler(game, state);
+        var closingHandler = new MarioWindowClosingHandler(game);
 
-            _splash?.Update((float)dt);
-
-            if (_splash != null && _splash.IsFinished)
-            {
-                _logger.LogInformation("Splash finished, starting game");
-                _splash.Dispose();
-                _splash = null;
-                _gameStarted = true;
-                game.Initialize();
-                game.LoadContent();
-            }
-        };
-
-        _window.Render += (dt) =>
-        {
-            Time.Update((float)dt);
-
-            if (!_gameStarted)
-            {
-                _splash?.Render();
-                return;
-            }
-
-            game.Render(0f);
-        };
-
-        _window.Closing += () =>
-        {
-            game.Shutdown();
-        };
+        _window.Load += loadHandler.Handle;
+        _window.Update += (dt) => updateHandler.Handle((float)dt);
+        _window.Render += (dt) => renderHandler.Handle((float)dt);
+        _window.Closing += closingHandler.Handle;
     }
 }
