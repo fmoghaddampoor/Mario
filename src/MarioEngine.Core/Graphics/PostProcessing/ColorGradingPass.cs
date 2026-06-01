@@ -1,28 +1,17 @@
 namespace MarioEngine.Core.Graphics.PostProcessing;
 
 using System;
+using System.IO;
 using Silk.NET.OpenGL;
 
 /// <summary>
 /// Color grading pass using a lookup table (LUT) texture.
 /// Maps input colors through a 3D LUT for artistic color correction.
+/// Shader loaded from file.
 /// </summary>
 public sealed class ColorGradingPass
 {
-    private const string FragSrc = @"
-#version 460
-in vec2 vTexCoord;
-out vec4 FragColor;
-uniform sampler2D uTexture;
-uniform sampler2D uLUT;
-void main() {
-    vec4 color = texture(uTexture, vTexCoord);
-    float index = color.r + color.g * 16.0 + color.b * 256.0;
-    float lutX = mod(index, 16.0) / 16.0 + 0.5 / 256.0;
-    float lutY = floor(index / 16.0) / 16.0 + 0.5 / 16.0;
-    vec3 graded = texture(uLUT, vec2(lutX, lutY)).rgb;
-    FragColor = vec4(graded, color.a);
-}";
+    private static readonly string ShaderDir = Path.Combine(AppContext.BaseDirectory, "Shaders");
 
     private readonly uint _program;
 
@@ -36,7 +25,9 @@ void main() {
     {
         ArgumentNullException.ThrowIfNull(gl);
         LUTTexture = lutTexture;
-        _program = ShaderHelper.Compile(gl, ShaderHelper.FullscreenVert, FragSrc);
+        var vert = File.ReadAllText(Path.Combine(ShaderDir, "fullscreen.vert"));
+        var frag = File.ReadAllText(Path.Combine(ShaderDir, "colorgrading.frag"));
+        _program = ShaderHelper.Compile(gl, vert, frag);
     }
 
     /// <summary>Gets the LUT texture handle.</summary>
@@ -48,7 +39,6 @@ void main() {
     /// <param name="gl">OpenGL context. Must not be null.</param>
     /// <param name="inputTexture">Source scene texture.</param>
     /// <param name="outputFb">Target framebuffer. Must not be null.</param>
-    /// <exception cref="ArgumentNullException">Thrown if gl or outputFb is null.</exception>
     public void Apply(GL gl, uint inputTexture, FrameBuffer outputFb)
     {
         ArgumentNullException.ThrowIfNull(gl);

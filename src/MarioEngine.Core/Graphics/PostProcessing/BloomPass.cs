@@ -1,58 +1,16 @@
 namespace MarioEngine.Core.Graphics.PostProcessing;
 
 using System;
+using System.IO;
 using Silk.NET.OpenGL;
 
 /// <summary>
 /// Bloom post-processing pass: extracts bright pixels, applies Gaussian blur,
-/// and combines the bloom with the original scene.
+/// and combines the bloom with the original scene. Shaders loaded from files.
 /// </summary>
 public sealed class BloomPass : IDisposable
 {
-    private const string BrightFrag = @"
-#version 460
-in vec2 vTexCoord;
-out vec4 FragColor;
-uniform sampler2D uTexture;
-uniform float uThreshold;
-void main() {
-    vec4 color = texture(uTexture, vTexCoord);
-    float lum = dot(color.rgb, vec3(0.299, 0.587, 0.114));
-    float brightness = max(0.0, lum - uThreshold);
-    FragColor = color * brightness / max(lum, 0.001);
-}";
-
-    private const string BlurFrag = @"
-#version 460
-in vec2 vTexCoord;
-out vec4 FragColor;
-uniform sampler2D uTexture;
-uniform vec2 uDirection;
-uniform float uSize;
-void main() {
-    vec4 color = texture(uTexture, vTexCoord) * 0.227;
-    vec2 off = uDirection * uSize;
-    color += texture(uTexture, vTexCoord + off * 1.0) * 0.194;
-    color += texture(uTexture, vTexCoord - off * 1.0) * 0.194;
-    color += texture(uTexture, vTexCoord + off * 2.0) * 0.121;
-    color += texture(uTexture, vTexCoord - off * 2.0) * 0.121;
-    color += texture(uTexture, vTexCoord + off * 3.0) * 0.054;
-    color += texture(uTexture, vTexCoord - off * 3.0) * 0.054;
-    FragColor = color;
-}";
-
-    private const string CombineFrag = @"
-#version 460
-in vec2 vTexCoord;
-out vec4 FragColor;
-uniform sampler2D uOriginal;
-uniform sampler2D uBloom;
-uniform float uIntensity;
-void main() {
-    vec4 original = texture(uOriginal, vTexCoord);
-    vec4 bloom = texture(uBloom, vTexCoord);
-    FragColor = original + bloom * uIntensity;
-}";
+    private static readonly string ShaderDir = Path.Combine(AppContext.BaseDirectory, "Shaders");
 
     private readonly uint _brightProgram;
     private readonly uint _blurProgram;
@@ -71,17 +29,19 @@ void main() {
         ArgumentNullException.ThrowIfNull(gl);
         _brightFb = new FrameBuffer(gl, width, height);
         _blurFb = new FrameBuffer(gl, width, height);
-        _brightProgram = ShaderHelper.Compile(gl, ShaderHelper.FullscreenVert, BrightFrag);
-        _blurProgram = ShaderHelper.Compile(gl, ShaderHelper.FullscreenVert, BlurFrag);
-        _combineProgram = ShaderHelper.Compile(gl, ShaderHelper.FullscreenVert, CombineFrag);
+
+        var vert = File.ReadAllText(Path.Combine(ShaderDir, "fullscreen.vert"));
+        _brightProgram = ShaderHelper.Compile(gl, vert, File.ReadAllText(Path.Combine(ShaderDir, "bloom_bright.frag")));
+        _blurProgram = ShaderHelper.Compile(gl, vert, File.ReadAllText(Path.Combine(ShaderDir, "bloom_blur.frag")));
+        _combineProgram = ShaderHelper.Compile(gl, vert, File.ReadAllText(Path.Combine(ShaderDir, "bloom_combine.frag")));
     }
 
     /// <summary>
     /// Applies the bloom effect to the input texture.
     /// </summary>
-    /// <param name="gl">OpenGL context.</param>
+    /// <param name="gl">OpenGL context. Must not be null.</param>
     /// <param name="inputTexture">Source scene texture handle.</param>
-    /// <param name="outputFb">Target framebuffer for the result.</param>
+    /// <param name="outputFb">Target framebuffer. Must not be null.</param>
     /// <param name="threshold">Brightness threshold (0-1). Default 0.8.</param>
     /// <param name="intensity">Bloom intensity multiplier. Default 1.0.</param>
     public void Apply(GL gl, uint inputTexture, FrameBuffer outputFb, float threshold = 0.8f, float intensity = 1.0f)
@@ -90,7 +50,6 @@ void main() {
         ArgumentNullException.ThrowIfNull(outputFb);
         var vao = ShaderHelper.QuadVao(gl);
 
-        // Bright pass
         _brightFb.Bind();
         gl.Clear(ClearBufferMask.ColorBufferBit);
         gl.UseProgram(_brightProgram);
@@ -101,7 +60,6 @@ void main() {
         gl.BindVertexArray(vao);
         gl.DrawArrays(PrimitiveType.Triangles, 0, 6);
 
-        // Blur horizontal
         _blurFb.Bind();
         gl.Clear(ClearBufferMask.ColorBufferBit);
         gl.UseProgram(_blurProgram);
@@ -112,7 +70,6 @@ void main() {
         gl.BindVertexArray(vao);
         gl.DrawArrays(PrimitiveType.Triangles, 0, 6);
 
-        // Blur vertical
         _brightFb.Bind();
         gl.Clear(ClearBufferMask.ColorBufferBit);
         gl.UseProgram(_blurProgram);
@@ -122,7 +79,6 @@ void main() {
         gl.BindVertexArray(vao);
         gl.DrawArrays(PrimitiveType.Triangles, 0, 6);
 
-        // Combine
         outputFb.Bind();
         gl.Clear(ClearBufferMask.ColorBufferBit);
         gl.UseProgram(_combineProgram);

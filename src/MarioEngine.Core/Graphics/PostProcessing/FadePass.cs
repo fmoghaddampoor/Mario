@@ -1,24 +1,17 @@
 namespace MarioEngine.Core.Graphics.PostProcessing;
 
 using System;
+using System.IO;
 using Silk.NET.OpenGL;
 
 /// <summary>
 /// Fade-to-black (or from-black) transition pass.
 /// Uses a uniform alpha value to control the fade level.
+/// Shader loaded from file.
 /// </summary>
 public sealed class FadePass
 {
-    private const string FragSrc = @"
-#version 460
-in vec2 vTexCoord;
-out vec4 FragColor;
-uniform sampler2D uTexture;
-uniform float uAlpha;
-void main() {
-    vec4 color = texture(uTexture, vTexCoord);
-    FragColor = vec4(color.rgb * (1.0 - uAlpha), 1.0);
-}";
+    private static readonly string ShaderDir = Path.Combine(AppContext.BaseDirectory, "Shaders");
 
     private readonly uint _program;
 
@@ -30,7 +23,9 @@ void main() {
     public FadePass(GL gl)
     {
         ArgumentNullException.ThrowIfNull(gl);
-        _program = ShaderHelper.Compile(gl, ShaderHelper.FullscreenVert, FragSrc);
+        var vert = File.ReadAllText(Path.Combine(ShaderDir, "fullscreen.vert"));
+        var frag = File.ReadAllText(Path.Combine(ShaderDir, "fade.frag"));
+        _program = ShaderHelper.Compile(gl, vert, frag);
     }
 
     /// <summary>
@@ -40,7 +35,6 @@ void main() {
     /// <param name="inputTexture">Source scene texture.</param>
     /// <param name="outputFb">Target framebuffer. Must not be null.</param>
     /// <param name="alpha">Fade alpha (0 = visible, 1 = fully black).</param>
-    /// <exception cref="ArgumentNullException">Thrown if gl or outputFb is null.</exception>
     public void Apply(GL gl, uint inputTexture, FrameBuffer outputFb, float alpha)
     {
         ArgumentNullException.ThrowIfNull(gl);
