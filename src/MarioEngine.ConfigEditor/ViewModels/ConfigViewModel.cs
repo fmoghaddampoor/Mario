@@ -12,6 +12,7 @@ namespace MarioEngine.ConfigEditor.ViewModels
     /// </summary>
     internal sealed partial class ConfigViewModel : ObservableObject
     {
+        /// <summary>Config manager for loading and saving game settings.</summary>
         private readonly ConfigManager _manager;
 
         /// <summary>
