@@ -10,7 +10,10 @@ using Microsoft.Extensions.Logging;
 /// </summary>
 public sealed class LayerManager
 {
+    /// <summary>Logger for debug output.</summary>
     private readonly ILogger<LayerManager> _logger;
+
+    /// <summary>Layer data keyed by render layer.</summary>
     private readonly Dictionary<RenderLayer, LayerData> _layers;
 
     /// <summary>

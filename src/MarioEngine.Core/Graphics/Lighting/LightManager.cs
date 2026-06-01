@@ -10,11 +10,19 @@ using Microsoft.Extensions.Logging;
 /// </summary>
 public sealed class LightManager
 {
+    /// <summary>Maximum number of dynamic lights allowed at once.</summary>
     private const int MaxLights = 16;
 
+    /// <summary>Logger for light limit warnings.</summary>
     private readonly ILogger<LightManager> _logger;
+
+    /// <summary>Active dynamic lights list.</summary>
     private readonly List<Light2D> _lights;
+
+    /// <summary>Ambient light intensity (0-1).</summary>
     private float _ambientIntensity = 0.3f;
+
+    /// <summary>Ambient light color as RGBA uint.</summary>
     private uint _ambientColor = 0x202040FF;
 
     /// <summary>

@@ -9,6 +9,7 @@ using System.Numerics;
 /// </summary>
 public sealed class Light2D
 {
+    /// <summary>Elapsed time for flicker animation in seconds.</summary>
     private float _flickerElapsed;
 
     /// <summary>Initializes a new instance of the <see cref="Light2D"/> class.</summary>
