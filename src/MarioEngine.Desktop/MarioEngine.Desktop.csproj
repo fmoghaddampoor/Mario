@@ -2,13 +2,16 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <ApplicationIcon>game.ico</ApplicationIcon>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <None Include="game.ico" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="splash.png" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Silk.NET.Windowing" />
     <PackageReference Include="Silk.NET.OpenGL" />
+    <PackageReference Include="StbImageSharp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MarioEngine.Core\MarioEngine.Core.csproj" />

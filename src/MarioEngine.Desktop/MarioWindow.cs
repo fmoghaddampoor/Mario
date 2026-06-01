@@ -10,12 +10,15 @@ using Silk.NET.Windowing;
 /// <summary>
 /// Wraps a Silk.NET <see cref="IWindow"/> and manages its lifecycle.
 /// Provides access to the OpenGL context, window properties, and CLI configuration.
+/// Displays a splash screen on startup before handing control to the game.
 /// </summary>
 internal sealed class MarioWindow : IDisposable
 {
     private readonly IWindow _window;
     private readonly ILogger<MarioWindow> _logger;
     private GL? _gl;
+    private SplashScreen? _splash;
+    private bool _gameStarted;
 
     private MarioWindow(IWindow window, ILogger<MarioWindow> logger)
     {
@@ -109,31 +112,55 @@ internal sealed class MarioWindow : IDisposable
     /// <summary>Closes the window and cleans up resources.</summary>
     public void Dispose()
     {
+        _splash?.Dispose();
         _gl?.Dispose();
         _window.Dispose();
     }
 
     /// <summary>
     /// Subscribes game lifecycle methods to the corresponding window events.
+    /// Displays a splash screen for 3 seconds before starting the game.
     /// </summary>
     /// <param name="game">The game instance to wire up.</param>
     public void WireGameEvents(Game game)
     {
         _window.Load += () =>
         {
-            game.Initialize();
-            game.LoadContent();
+            _splash = SplashScreen.Create(this.GL);
         };
 
         _window.Update += (dt) =>
         {
-            game.ProcessInput((float)dt);
-            game.Update((float)dt);
+            if (_gameStarted)
+            {
+                game.ProcessInput((float)dt);
+                game.Update((float)dt);
+                return;
+            }
+
+            _splash?.Update((float)dt);
+
+            if (_splash != null && _splash.IsFinished)
+            {
+                _logger.LogInformation("Splash finished, starting game");
+                _splash.Dispose();
+                _splash = null;
+                _gameStarted = true;
+                game.Initialize();
+                game.LoadContent();
+            }
         };
 
         _window.Render += (dt) =>
         {
             Time.Update((float)dt);
+
+            if (!_gameStarted)
+            {
+                _splash?.Render();
+                return;
+            }
+
             game.Render(0f);
         };
 
