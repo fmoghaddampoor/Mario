@@ -12,18 +12,24 @@ using System.Text.Json;
 /// </summary>
 public sealed class ConfigManager
 {
+    /// <summary>Name of the configuration file.</summary>
     private const string ConfigFileName = "config.json";
+
+    /// <summary>Directory for storing configuration files under AppData.</summary>
     private static readonly string ConfigDirectory = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "MarioGame");
 
+    /// <summary>Full file path to the configuration JSON file.</summary>
     private static readonly string ConfigPath = Path.Combine(ConfigDirectory, ConfigFileName);
 
+    /// <summary>Cached JSON serializer options for consistent formatting.</summary>
     private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
     {
         WriteIndented = true,
     };
 
+    /// <summary>Initializes a new instance of the <see cref="ConfigManager"/> class. Use <see cref="Load"/> to create.</summary>
     private ConfigManager()
     {
     }
