@@ -59,8 +59,10 @@ internal sealed partial class SplashScreen
         _gl.BindVertexArray(0);
         RenderStars(_gl, _elapsed, fbWidth, fbHeight);
 
-        // Layer 3: Text (GRAVITON WORKS with glow)
+        // Layer 3: Text (GRAVITON WORKS with glow, overlaid with blending)
         _gl.Viewport(vpX, vpY, (uint)vpW, (uint)vpH);
+        _gl.Enable(EnableCap.Blend);
+        _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         _gl.UseProgram(_program);
         _gl.BindTexture(TextureTarget.Texture2D, _textTexture);
         _gl.Uniform1(texLoc, 0);
@@ -70,5 +72,6 @@ internal sealed partial class SplashScreen
 
         _gl.BindVertexArray(0);
         _gl.UseProgram(0);
+        _gl.Disable(EnableCap.Blend);
     }
 }
