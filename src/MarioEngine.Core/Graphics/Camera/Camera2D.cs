@@ -9,14 +9,31 @@ using System.Numerics;
 /// </summary>
 public sealed class Camera2D
 {
+    /// <summary>Camera position in world pixels (center of the view).</summary>
     private Vector2 _position;
+
+    /// <summary>Zoom level. 1.0 = normal, 2.0 = 2x zoom.</summary>
     private float _zoom = 1f;
+
+    /// <summary>Camera rotation in radians.</summary>
     private float _rotation;
+
+    /// <summary>Current screen shake offset in clip space.</summary>
     private Vector2 _shakeOffset;
+
+    /// <summary>Maximum shake intensity in pixels.</summary>
     private float _shakeIntensity;
+
+    /// <summary>Duration of the shake effect in seconds.</summary>
     private float _shakeDuration;
+
+    /// <summary>Elapsed time since shake started in seconds.</summary>
     private float _shakeElapsed;
+
+    /// <summary>Viewport width in pixels for clip space conversion.</summary>
     private float _viewportWidth = 1920f;
+
+    /// <summary>Viewport height in pixels for clip space conversion.</summary>
     private float _viewportHeight = 1080f;
 
     /// <summary>Gets or sets the camera position in world pixels (center of the screen).</summary>

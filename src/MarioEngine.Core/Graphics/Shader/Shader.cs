@@ -10,7 +10,10 @@ using Silk.NET.OpenGL;
 /// </summary>
 public sealed class Shader : IDisposable
 {
+    /// <summary>OpenGL context for shader operations.</summary>
     private readonly GL _gl;
+
+    /// <summary>True after Dispose has been called.</summary>
     private bool _disposed;
 
     /// <summary>Initializes a new instance of the <see cref="Shader"/> class.</summary>

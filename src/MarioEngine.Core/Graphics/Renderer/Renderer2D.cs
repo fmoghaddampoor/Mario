@@ -11,7 +11,10 @@ using Microsoft.Extensions.Logging;
 /// </summary>
 public sealed class Renderer2D
 {
+    /// <summary>Sprite batcher for submitting draw calls.</summary>
     private readonly SpriteBatcher _batcher;
+
+    /// <summary>Logger for debug output and warnings.</summary>
     private readonly ILogger<Renderer2D> _logger;
 
     /// <summary>

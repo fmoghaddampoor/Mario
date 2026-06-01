@@ -10,6 +10,7 @@ using Silk.NET.OpenGL;
 /// </summary>
 internal sealed partial class SplashScreen
 {
+    /// <summary>Directory containing shader source files relative to the executable.</summary>
     private const string ShaderDir = "Shaders";
 
     private static string ShaderPath(string filename) => Path.Combine(AppContext.BaseDirectory, ShaderDir, filename);

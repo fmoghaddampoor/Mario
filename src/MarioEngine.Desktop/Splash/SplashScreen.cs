@@ -14,6 +14,7 @@ using Silk.NET.OpenGL;
 /// </summary>
 internal sealed partial class SplashScreen : IDisposable
 {
+    /// <summary>Aspect ratio of the splash image (16:9).</summary>
     private const float ImageAspectRatio = 1920f / 1080f;
 
     private static readonly string NebulaPath = Path.Combine(AppContext.BaseDirectory, "splash_nebula.png");

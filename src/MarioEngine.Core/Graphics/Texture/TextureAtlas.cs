@@ -12,6 +12,7 @@ using System.Text.Json;
 /// </summary>
 public sealed class TextureAtlas
 {
+    /// <summary>Region lookup by name, case-insensitive.</summary>
     private readonly Dictionary<string, AtlasRegion> _regions;
 
     private TextureAtlas(Dictionary<string, AtlasRegion> regions)

@@ -9,7 +9,10 @@ using Silk.NET.OpenGL;
 /// </summary>
 public sealed class Texture2D : IDisposable
 {
+    /// <summary>OpenGL context for texture operations.</summary>
     private readonly GL _gl;
+
+    /// <summary>True after Dispose has been called.</summary>
     private bool _disposed;
 
     /// <summary>

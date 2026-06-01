@@ -12,10 +12,19 @@ using Silk.NET.OpenGL;
 /// </summary>
 public sealed partial class ShaderManager
 {
+    /// <summary>OpenGL context for shader compilation.</summary>
     private readonly GL _gl;
+
+    /// <summary>Logger for shader compilation and reload events.</summary>
     private readonly ILogger<ShaderManager> _logger;
+
+    /// <summary>Cache of loaded shaders by name.</summary>
     private readonly Dictionary<string, Shader> _cache;
+
+    /// <summary>File system watchers for hot-reload, keyed by shader name.</summary>
     private readonly Dictionary<string, FileSystemWatcher> _watchers;
+
+    /// <summary>Cached default shader, loaded lazily on first access.</summary>
     private Shader? _defaultShader;
 
     /// <summary>

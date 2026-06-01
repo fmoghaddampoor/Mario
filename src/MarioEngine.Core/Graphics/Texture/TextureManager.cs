@@ -14,8 +14,13 @@ using StbImageSharp;
 /// </summary>
 public sealed partial class TextureManager
 {
+    /// <summary>OpenGL context for GPU texture uploads.</summary>
     private readonly GL _gl;
+
+    /// <summary>Logger for texture loading events.</summary>
     private readonly ILogger<TextureManager> _logger;
+
+    /// <summary>Texture cache keyed by file path, using weak references for auto-cleanup.</summary>
     private readonly Dictionary<string, WeakReference<Texture2D>> _cache;
 
     /// <summary>
