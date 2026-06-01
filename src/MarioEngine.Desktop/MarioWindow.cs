@@ -14,12 +14,24 @@ using Silk.NET.Windowing;
 /// </summary>
 internal sealed class MarioWindow : IDisposable
 {
+    /// <summary>Underlying Silk.NET window instance.</summary>
     private readonly IWindow _window;
+
+    /// <summary>Logger instance for window lifecycle events.</summary>
     private readonly ILogger<MarioWindow> _logger;
+
+    /// <summary>OpenGL context. Set during the window Load event.</summary>
     private GL? _gl;
+
+    /// <summary>Splash screen displayed on startup. Null after 3 seconds.</summary>
     private SplashScreen? _splash;
+
+    /// <summary>True once splash finishes and game lifecycle begins.</summary>
     private bool _gameStarted;
 
+    /// <summary>Initializes a new instance of the <see cref="MarioWindow"/> class.</summary>
+    /// <param name="window">The underlying Silk.NET window this instance wraps.</param>
+    /// <param name="logger">Logger instance for window lifecycle events.</param>
     private MarioWindow(IWindow window, ILogger<MarioWindow> logger)
     {
         _window = window;
