@@ -1,0 +1,25 @@
+# Graphify
+graphify-out/manifest.json
+graphify-out/cost.json
+
+# Build
+build/
+bin/
+obj/
+*.exe
+*.pdb
+*.dll
+
+# IDE
+.vs/
+.vscode/
+*.suo
+*.user
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+logs/
+*.log
