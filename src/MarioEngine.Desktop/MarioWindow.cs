@@ -12,7 +12,7 @@ using Silk.NET.Windowing;
 /// Provides access to the OpenGL context, window properties, and CLI configuration.
 /// Displays a splash screen on startup before handing control to the game.
 /// </summary>
-internal sealed class MarioWindow : IDisposable
+internal sealed partial class MarioWindow : IDisposable
 {
     /// <summary>Underlying Silk.NET window instance.</summary>
     private readonly IWindow _window;
@@ -123,59 +123,6 @@ internal sealed class MarioWindow : IDisposable
         _splash?.Dispose();
         _gl?.Dispose();
         _window.Dispose();
-    }
-
-    /// <summary>
-    /// Subscribes game lifecycle methods to the corresponding window events.
-    /// Displays a splash screen for 3 seconds before starting the game.
-    /// </summary>
-    /// <param name="game">The game instance to wire up.</param>
-    public void WireGameEvents(Game game)
-    {
-        _window.Load += () =>
-        {
-            _splash = SplashScreen.Create(this.GL);
-        };
-
-        _window.Update += (dt) =>
-        {
-            if (_gameStarted)
-            {
-                game.ProcessInput((float)dt);
-                game.Update((float)dt);
-                return;
-            }
-
-            _splash?.Update((float)dt);
-
-            if (_splash != null && _splash.IsFinished)
-            {
-                _logger.LogInformation("Splash finished, starting game");
-                _splash.Dispose();
-                _splash = null;
-                _gameStarted = true;
-                game.Initialize();
-                game.LoadContent();
-            }
-        };
-
-        _window.Render += (dt) =>
-        {
-            Time.Update((float)dt);
-
-            if (!_gameStarted)
-            {
-                _splash?.Render();
-                return;
-            }
-
-            game.Render(0f);
-        };
-
-        _window.Closing += () =>
-        {
-            game.Shutdown();
-        };
     }
 
     /// <summary>
