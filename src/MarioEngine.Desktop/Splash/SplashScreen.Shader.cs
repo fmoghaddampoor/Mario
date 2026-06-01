@@ -32,14 +32,23 @@ void main()
 {
     vec4 color = texture(uTexture, vTexCoord);
 
-    // Only very bright pixels (stars, not nebula) get a subtle twinkle
+    // Only twinkle isolated bright pixels (background stars), not large bright areas (text, orb)
     float lum = dot(color.rgb, vec3(0.299, 0.587, 0.114));
-    if (lum > 0.75)
-    {
-        float phase = sin(vTexCoord.x * 137.0 + vTexCoord.y * 73.0) * 0.5 + 0.5;
-        float twinkle = 0.88 + 0.12 * sin(uTime * (2.0 + phase * 3.0) + phase * 6.28);
-        color.rgb *= mix(1.0, twinkle, uTwinkle);
-    }
+
+    // Check adjacent pixels to exclude large bright areas (text, logo)
+    float neighborLum = 0.0;
+    neighborLum += dot(texture(uTexture, vTexCoord + vec2(0.003, 0.0)).rgb, vec3(0.299, 0.587, 0.114));
+    neighborLum += dot(texture(uTexture, vTexCoord - vec2(0.003, 0.0)).rgb, vec3(0.299, 0.587, 0.114));
+    neighborLum += dot(texture(uTexture, vTexCoord + vec2(0.0, 0.003)).rgb, vec3(0.299, 0.587, 0.114));
+    neighborLum += dot(texture(uTexture, vTexCoord - vec2(0.0, 0.003)).rgb, vec3(0.299, 0.587, 0.114));
+    neighborLum /= 4.0;
+
+    // Star: bright pixel surrounded by dark neighbors
+    float isStar = step(0.75, lum) * step(neighborLum, 0.3);
+
+    float phase = sin(vTexCoord.x * 137.0 + vTexCoord.y * 73.0) * 0.5 + 0.5;
+    float twinkle = 0.85 + 0.15 * sin(uTime * (2.0 + phase * 4.0) + phase * 6.28);
+    color.rgb = mix(color.rgb, color.rgb * twinkle, isStar * uTwinkle);
 
     FragColor = color;
 }";
