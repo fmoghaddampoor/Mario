@@ -5,36 +5,15 @@ using System.IO;
 using MarioEngine.Desktop.Resources;
 using Serilog;
 using Silk.NET.OpenGL;
-using StbImageSharp;
 
 /// <summary>
 /// Displays a splash screen image for a fixed duration using OpenGL.
 /// Shows a spectacular cosmic scene for a configurable duration at startup.
 /// Renders with correct aspect ratio and letterboxing on any display.
+/// This class is split across multiple files by feature area.
 /// </summary>
-internal sealed class SplashScreen : IDisposable
+internal sealed partial class SplashScreen : IDisposable
 {
-    private const string VertexShaderSource = @"
-#version 460
-layout(location = 0) in vec2 aPosition;
-layout(location = 1) in vec2 aTexCoord;
-out vec2 vTexCoord;
-void main()
-{
-    gl_Position = vec4(aPosition, 0.0, 1.0);
-    vTexCoord = aTexCoord;
-}";
-
-    private const string FragmentShaderSource = @"
-#version 460
-in vec2 vTexCoord;
-out vec4 FragColor;
-uniform sampler2D uTexture;
-void main()
-{
-    FragColor = texture(uTexture, vTexCoord);
-}";
-
     private const float ImageAspectRatio = 1920f / 1080f;
 
     private static readonly string SplashPath = Path.Combine(
@@ -100,58 +79,6 @@ void main()
         _elapsed += dt;
     }
 
-    /// <summary>
-    /// Renders the splash image with correct aspect ratio and letterboxing.
-    /// Centers the 16:9 image within the current framebuffer, filling remaining
-    /// space with black bars.
-    /// </summary>
-    /// <param name="fbWidth">Framebuffer width in pixels.</param>
-    /// <param name="fbHeight">Framebuffer height in pixels.</param>
-    public void Render(int fbWidth, int fbHeight)
-    {
-        _gl.ClearColor(0f, 0f, 0f, 1f);
-        _gl.Clear(ClearBufferMask.ColorBufferBit);
-
-        if (fbWidth < 1 || fbHeight < 1)
-        {
-            return;
-        }
-
-        var fbAspect = (float)fbWidth / fbHeight;
-        int vpX, vpY, vpW, vpH;
-
-        if (fbAspect > ImageAspectRatio)
-        {
-            vpH = fbHeight;
-            vpW = (int)(fbHeight * ImageAspectRatio);
-            vpX = (int)((fbWidth - vpW) / 2f);
-            vpY = 0;
-        }
-        else
-        {
-            vpW = fbWidth;
-            vpH = (int)(fbWidth / ImageAspectRatio);
-            vpX = 0;
-            vpY = (int)((fbHeight - vpH) / 2f);
-        }
-
-        _gl.Viewport(vpX, vpY, (uint)vpW, (uint)vpH);
-
-        _gl.UseProgram(_program);
-
-        _gl.ActiveTexture(TextureUnit.Texture0);
-        _gl.BindTexture(TextureTarget.Texture2D, _textureHandle);
-
-        var texLoc = _gl.GetUniformLocation(_program, "uTexture");
-        _gl.Uniform1(texLoc, 0);
-
-        _gl.BindVertexArray(_vao);
-        _gl.DrawArrays(PrimitiveType.Triangles, 0, 6);
-
-        _gl.BindVertexArray(0);
-        _gl.UseProgram(0);
-    }
-
     /// <summary>Releases OpenGL resources.</summary>
     public void Dispose()
     {
@@ -159,120 +86,5 @@ void main()
         _gl.DeleteTexture(_textureHandle);
         _gl.DeleteVertexArray(_vao);
         _gl.DeleteBuffer(_vbo);
-    }
-
-    private static uint CreateShaderProgram(GL gl)
-    {
-        var vertex = LoadShader(gl, ShaderType.VertexShader, VertexShaderSource);
-        var fragment = LoadShader(gl, ShaderType.FragmentShader, FragmentShaderSource);
-
-        var program = gl.CreateProgram();
-        gl.AttachShader(program, vertex);
-        gl.AttachShader(program, fragment);
-        gl.LinkProgram(program);
-
-        gl.GetProgram(program, ProgramPropertyARB.LinkStatus, out var success);
-        if (success == 0)
-        {
-            var info = gl.GetProgramInfoLog(program);
-            throw new InvalidOperationException(string.Format(Resources.Strings.Shader_LinkFailed, info));
-        }
-
-        gl.DetachShader(program, vertex);
-        gl.DetachShader(program, fragment);
-        gl.DeleteShader(vertex);
-        gl.DeleteShader(fragment);
-
-        return program;
-    }
-
-    private static uint LoadShader(GL gl, ShaderType type, string source)
-    {
-        var shader = gl.CreateShader(type);
-        gl.ShaderSource(shader, source);
-        gl.CompileShader(shader);
-
-        gl.GetShader(shader, ShaderParameterName.CompileStatus, out var success);
-        if (success == 0)
-        {
-            var info = gl.GetShaderInfoLog(shader);
-            throw new InvalidOperationException(string.Format(Resources.Strings.Shader_CompileFailed, type, info));
-        }
-
-        return shader;
-    }
-
-    private static uint LoadTexture(GL gl, string path)
-    {
-        if (!File.Exists(path))
-        {
-            throw new FileNotFoundException(string.Format(Resources.Strings.Splash_NotFound, path));
-        }
-
-        ImageResult image;
-        using (var stream = File.OpenRead(path))
-        {
-            image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
-        }
-
-        var handle = gl.GenTexture();
-        gl.BindTexture(TextureTarget.Texture2D, handle);
-
-        gl.TexImage2D(
-            TextureTarget.Texture2D,
-            0,
-            InternalFormat.Rgba,
-            (uint)image.Width,
-            (uint)image.Height,
-            0,
-            PixelFormat.Rgba,
-            PixelType.UnsignedByte,
-            image.Data);
-
-        gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-        gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-        gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-        gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-
-        gl.BindTexture(TextureTarget.Texture2D, 0);
-
-        return handle;
-    }
-
-    private static (uint Vao, uint Vbo) CreateQuad(GL gl)
-    {
-        var vertices = new float[]
-        {
-            -1f, -1f, 0f, 1f,
-            1f, -1f, 1f, 1f,
-            1f, 1f, 1f, 0f,
-            -1f, -1f, 0f, 1f,
-            1f, 1f, 1f, 0f,
-            -1f, 1f, 0f, 0f,
-        };
-
-        var vao = gl.GenVertexArray();
-        var vbo = gl.GenBuffer();
-
-        gl.BindVertexArray(vao);
-        gl.BindBuffer(BufferTargetARB.ArrayBuffer, vbo);
-
-        unsafe
-        {
-            fixed (float* ptr = vertices)
-            {
-                gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(vertices.Length * sizeof(float)), ptr, BufferUsageARB.StaticDraw);
-            }
-        }
-
-        gl.EnableVertexAttribArray(0);
-        gl.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
-
-        gl.EnableVertexAttribArray(1);
-        gl.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 2 * sizeof(float));
-
-        gl.BindVertexArray(0);
-
-        return (vao, vbo);
     }
 }
