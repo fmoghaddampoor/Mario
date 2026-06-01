@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 /// </summary>
 public class Game
 {
+    /// <summary>Logger instance for game lifecycle events.</summary>
     private readonly ILogger<Game> _logger;
 
     /// <summary>Initializes a new instance of the <see cref="Game"/> class.</summary>

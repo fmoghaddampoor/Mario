@@ -11,6 +11,7 @@ using Serilog;
 /// </summary>
 public sealed class GameServiceProvider : IDisposable
 {
+    /// <summary>Underlying service provider instance.</summary>
     private readonly ServiceProvider _provider;
 
     /// <summary>Initializes a new instance of the <see cref="GameServiceProvider"/> class.</summary>

@@ -6,9 +6,16 @@ namespace MarioEngine.Core;
 /// </summary>
 public static class Time
 {
+    /// <summary>Delta time from the previous frame in seconds (clamped).</summary>
     private static float _deltaTime;
+
+    /// <summary>Total accumulated scaled time in seconds.</summary>
     private static float _totalTime;
+
+    /// <summary>Multiplier applied to delta time. 0 = paused, 1 = normal.</summary>
     private static float _timeScale = 1f;
+
+    /// <summary>Total number of frames rendered since last reset.</summary>
     private static int _frameCount;
 
     /// <summary>Gets the delta time in seconds affected by <see cref="TimeScale"/>.</summary>

@@ -33,10 +33,27 @@
 
 ## 3. Documentation
 
-- Every public, protected, and internal member must have an XML doc comment (`/// <summary>`)
-- Use `<param>`, `<returns>`, `<exception>` tags where applicable
-- Internal members also require docs since CS1591 is enabled
+- Every member must have an XML doc comment (`/// <summary>`), including private fields and constants
+- Every method parameter must have a `<param>` tag
+- Every return value must have a `<returns>` tag
+- Every thrown exception must have an `<exception>` tag
 - No copyright/file headers at the top of .cs files
+
+```csharp
+/// <summary>Maximum walk speed in pixels per second.</summary>
+private const float MaxWalkSpeed = 200f;
+
+/// <summary>Logger instance for this class.</summary>
+private readonly ILogger<PlayerController> _logger;
+
+/// <summary>Processes player input and updates movement.</summary>
+/// <param name="dt">Delta time in seconds.</param>
+/// <param name="input">Current input state snapshot.</param>
+/// <returns>True if the player moved this frame.</returns>
+private bool ProcessMovement(float dt, InputState input)
+{
+}
+```
 
 ## 4. Usings
 
