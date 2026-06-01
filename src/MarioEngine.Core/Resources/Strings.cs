@@ -32,4 +32,22 @@ internal static class Strings
 
     /// <summary>Gets the "Debug overlay toggled off" log message.</summary>
     public static string DebugOverlay_ToggledOff => "Debug overlay toggled off";
+
+    /// <summary>Gets the "Audio initialized" log message with vendor, renderer, version.</summary>
+    public static string Audio_Initialized => "Audio initialized: {Vendor} / {Renderer} / {Version}";
+
+    /// <summary>Gets the "Audio init failed" log message.</summary>
+    public static string Audio_InitFailed => "Failed to initialize OpenAL audio";
+
+    /// <summary>Gets the "No audio device found" log message.</summary>
+    public static string Audio_NoDevice => "No audio device found";
+
+    /// <summary>Gets the "Could not create audio context" log message.</summary>
+    public static string Audio_NoContext => "Could not create OpenAL context";
+
+    /// <summary>Gets the "Running in silent mode (no audio)" log message.</summary>
+    public static string Audio_SilentMode => "Audio unavailable — running in silent mode";
+
+    /// <summary>Gets the "Audio shutdown" log message.</summary>
+    public static string Audio_Shutdown => "Audio shutdown complete";
 }

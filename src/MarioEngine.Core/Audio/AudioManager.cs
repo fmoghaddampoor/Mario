@@ -1,0 +1,142 @@
+namespace MarioEngine.Core.Audio;
+
+using System;
+using MarioEngine.Core.Config;
+using MarioEngine.Core.Resources;
+using Microsoft.Extensions.Logging;
+using Silk.NET.OpenAL;
+
+/// <summary>
+/// Manages the OpenAL audio device and context lifecycle using the high-level
+/// <see cref="AudioContext"/> wrapper. Provides the AL API instance, volume control,
+/// and graceful silent fallback if OpenAL is unavailable.
+/// Call <see cref="Initialize"/> after the game starts, <see cref="Dispose"/> on shutdown.
+/// </summary>
+public sealed class AudioManager : IDisposable
+{
+    /// <summary>Logger for audio lifecycle events.</summary>
+    private readonly ILogger _logger;
+
+    /// <summary>Audio configuration for volume levels.</summary>
+    private readonly AudioConfig _config;
+
+    /// <summary>High-level OpenAL audio context wrapper. Null in silent fallback mode.</summary>
+    private AudioContext? _context;
+
+    /// <summary>Low-level AL API instance for source/buffer operations. Null in silent mode.</summary>
+    private AL? _al;
+
+    /// <summary>True after successful initialization.</summary>
+    private bool _initialized;
+
+    /// <summary>True if the manager has been disposed.</summary>
+    private bool _disposed;
+
+    /// <summary>Initializes a new instance of the <see cref="AudioManager"/> class.</summary>
+    /// <param name="config">Audio configuration with volume settings.</param>
+    /// <param name="logger">Logger instance.</param>
+    /// <exception cref="ArgumentNullException">Thrown if config or logger is null.</exception>
+    public AudioManager(AudioConfig config, ILogger logger)
+    {
+        _config = config ?? throw new ArgumentNullException(nameof(config));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    /// <summary>Gets the low-level AL API instance. Null in silent fallback mode.</summary>
+    public AL? AL => _al;
+
+    /// <summary>Gets the master volume (0.0 to 1.0).</summary>
+    public float MasterVolume => _config.MasterVolume;
+
+    /// <summary>Gets the music bus volume (0.0 to 1.0).</summary>
+    public float MusicVolume => _config.MusicVolume;
+
+    /// <summary>Gets the SFX bus volume (0.0 to 1.0).</summary>
+    public float SfxVolume => _config.SfxVolume;
+
+    /// <summary>Gets a value indicating whether OpenAL was initialized successfully.</summary>
+    public bool IsInitialized => _initialized;
+
+    /// <summary>
+    /// Initializes the OpenAL audio device and context using the default device.
+    /// Falls back to silent mode gracefully if OpenAL is unavailable.
+    /// </summary>
+    public void Initialize()
+    {
+        if (_initialized)
+        {
+            return;
+        }
+
+        try
+        {
+            _al = AL.GetApi();
+            _context = new AudioContext();
+            _context.MakeCurrent();
+
+            var vendor = _al.GetStateProperty(StateString.Vendor);
+            var renderer = _al.GetStateProperty(StateString.Renderer);
+            var version = _al.GetStateProperty(StateString.Version);
+
+            _al.SetListenerProperty(ListenerFloat.Gain, _config.MasterVolume);
+            _al.SetListenerProperty(ListenerVector3.Position, 0f, 0f, 0f);
+
+            _initialized = true;
+
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation(
+                    Resources.Strings.Audio_Initialized,
+                    vendor,
+                    renderer,
+                    version);
+            }
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            _logger.LogWarning(ex, Resources.Strings.Audio_InitFailed);
+            EnterSilentMode();
+        }
+    }
+
+    /// <summary>
+    /// Sets the master volume and applies it to the OpenAL listener.
+    /// </summary>
+    /// <param name="volume">Volume level from 0.0 (silent) to 1.0 (full).</param>
+    public void SetMasterVolume(float volume)
+    {
+        _config.MasterVolume = Math.Clamp(volume, 0f, 1f);
+        if (_initialized && _al != null)
+        {
+            _al.SetListenerProperty(ListenerFloat.Gain, _config.MasterVolume);
+        }
+    }
+
+    /// <summary>Releases OpenAL device and context resources.</summary>
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        _initialized = false;
+        _al?.Dispose();
+        _al = null;
+        _context?.Dispose();
+        _context = null;
+
+        _logger.LogInformation(Resources.Strings.Audio_Shutdown);
+    }
+
+    private void EnterSilentMode()
+    {
+        _initialized = false;
+        _al?.Dispose();
+        _al = null;
+        _context?.Dispose();
+        _context = null;
+        _logger.LogInformation(Resources.Strings.Audio_SilentMode);
+    }
+}

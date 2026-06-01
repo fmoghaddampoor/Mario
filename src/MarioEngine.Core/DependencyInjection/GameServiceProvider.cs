@@ -1,6 +1,8 @@
 namespace MarioEngine.Core.DependencyInjection
 {
     using System;
+    using MarioEngine.Core.Audio;
+    using MarioEngine.Core.Config;
     using MarioEngine.Core.Resources;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -70,6 +72,9 @@ namespace MarioEngine.Core.DependencyInjection
                 builder.ClearProviders();
                 builder.AddSerilog(dispose: true);
             });
+
+            var config = ConfigManager.Load();
+            services.AddSingleton(config.Config);
 
             services.AddSingleton<Game>();
         }
