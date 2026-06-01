@@ -149,6 +149,42 @@ Source Audio (WAV/MP3)
 
 ---
 
+## Logging System
+
+### Architecture
+
+```
+Game Code → ILogger<T> (abstraction)
+              → Serilog (provider)
+                   ├── Console Sink (colored, dev)
+                   ├── File Sink (rolling daily, 14 days)
+                   ├── Seq Sink (http://localhost:5341)
+                   └── Grafana Loki Sink (http://localhost:3100)
+```
+
+### Sequence
+1. `GameServiceProvider.CreateDefault()` sets up DI with Serilog logging
+2. `LogConfiguration.Initialize()` configures sinks from startup parameters
+3. All game systems receive `ILogger<T>` via constructor injection
+4. Logs flow to console, file, Seq, and Loki simultaneously
+5. F4 toggles in-game log overlay (last 50 messages)
+
+### Structured Properties
+Every log call uses named properties (not string concat) so Seq and Loki can index and search them:
+
+```csharp
+_logger.LogInformation("Player {Id} scored {Points} points", playerId, score);
+// Queryable in Seq:  Id=42 AND Points>1000
+```
+
+### Seq Dashboard
+Single Docker container — `docker run datalust/seq` — web UI at `http://localhost:5341`.
+
+### Grafana + Loki
+Requires Loki server + Promtail/Alloy agent. Grafana dashboard visualizes logs with full structured search.
+
+---
+
 ## Build & Deployment
 
 ### Cross-Platform
@@ -167,12 +203,18 @@ Source Audio (WAV/MP3)
 ## Key Dependencies
 
 | Package | Purpose |
-|---|---|
+|---|---|---|
 | `Silk.NET` | Windowing, OpenGL, Input, OpenAL |
 | `NAudio` / `NVorbis` | MP3 decoding |
 | `StbImageSharp` | Image loading (PNG → raw pixel data) |
 | `System.Text.Json` | Asset metadata, level files |
 | `ImGui.NET` (optional) | Editor tooling |
+| `Microsoft.Extensions.DependencyInjection` | DI container |
+| `Serilog` | Structured logging |
+| `Serilog.Sinks.Seq` | Seq log viewer sink |
+| `Serilog.Sinks.Grafana.Loki` | Grafana Loki sink |
+| `Serilog.Enrichers.Environment` | Machine name, OS enrichment |
+| `Serilog.Enrichers.Thread` | Thread ID enrichment |
 
 ---
 
@@ -190,15 +232,17 @@ Source Audio (WAV/MP3)
 
 ```
 MarioEngine/
- ├── Core/            # Application loop, Game class, Time
- ├── Graphics/        # Renderer, SpriteBatcher, Camera, Shaders
- ├── Audio/           # AudioEngine, SoundEffect, MusicStream
- ├── Physics/         # Collision detection, RigidBody, TileMapCollider
- ├── Scene/           # Entity, Component, Scene, SceneManager
- ├── Assets/          # AssetManager, TextureCache, AudioCache
- ├── Input/           # InputManager, InputAction, RebindUI
- ├── UI/              # HUD, Menu, Button, TextRenderer
- ├── Game/            # Player, Enemies, PowerUps, Blocks, Items
- ├── Level/           # LevelLoader, TileMap, SpawnPoint
- └── Tools/           # Level editor, Texture packer, Atlas builder
+ ├── Core/                 # Application loop, Game class, Time
+ ├── Graphics/             # Renderer, SpriteBatcher, Camera, Shaders
+ ├── Audio/                # AudioEngine, SoundEffect, MusicStream
+ ├── Physics/              # Collision detection, RigidBody, TileMapCollider
+ ├── Scene/                # Entity, Component, Scene, SceneManager
+ ├── Assets/               # AssetManager, TextureCache, AudioCache
+ ├── Input/                # InputManager, InputAction, RebindUI
+ ├── UI/                   # HUD, Menu, Button, TextRenderer
+ ├── Game/                 # Player, Enemies, PowerUps, Blocks, Items
+ ├── Level/                # LevelLoader, TileMap, SpawnPoint
+ ├── Logging/              # LogConfiguration, Serilog setup
+ ├── DependencyInjection/  # GameServiceProvider, DI registration
+ └── Tools/                # Level editor, Texture packer, Atlas builder
 ```

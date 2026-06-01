@@ -347,57 +347,99 @@ git tag v1.0.0
 
 ---
 
+## Dependency Injection
+
+### Framework: `Microsoft.Extensions.DependencyInjection`
+
+All game systems are wired through a central DI container.
+
+### Setup
+
+```csharp
+// Program.cs startup
+using var services = GameServiceProvider.CreateDefault();
+var game = services.Get<Game>();
+game.Run();
+```
+
+### Registration
+
+```csharp
+// GameServiceProvider.ConfigureServices()
+services.AddSingleton<Game>();
+services.AddSingleton<AssetManager>();
+services.AddSingleton<AudioEngine>();
+services.AddSingleton<InputManager>();
+services.AddTransient<PlayerController>();
+services.AddScoped<Scene>();
+```
+
+### Resolution
+
+```csharp
+public class Game
+{
+    public Game(ILogger<Game> logger, AssetManager assets, AudioEngine audio)
+    {
+        // Constructor injection — all dependencies provided by container
+    }
+}
+```
+
+---
+
 ## Logging
 
-### Framework: `Microsoft.Extensions.Logging`
+### Stack: Serilog → Seq + Grafana Loki
+
+```
+Game → Serilog (structured JSON)
+         ├── Console (dev, colored)
+         ├── File (rolling daily, 14-day retention)
+         ├── Seq (http://localhost:5341, structured log viewer)
+         └── Grafana Loki (http://localhost:3100, via Promtail/Alloy)
+```
 
 No `Console.WriteLine` anywhere in code (banned by analyzer).
 
-### Configuration
+### Initialization
 
 ```csharp
-// Program.cs
-using var loggerFactory = LoggerFactory.Create(builder =>
-{
-    builder
-        .AddConsole()
-        .AddFile("logs/mario.log", outputTemplate: "{Timestamp:HH:mm:ss} [{Level}] {SourceContext}: {Message}{NewLine}{Exception}")
-        .SetMinimumLevel(GetLogLevel());
-});
-
-// Game.cs
-private readonly ILogger<Game> _logger;
-
-public Game(ILogger<Game> logger)
-{
-    _logger = logger;
-}
-
-public void Initialize()
-{
-    _logger.LogInformation("Game initializing (version {Version})", VersionInfo.Current);
-}
+// Startup
+LogConfiguration.Initialize(
+    logDirectory: "logs",
+    seqUrl: new Uri("http://localhost:5341"),
+    lokiUrl: new Uri("http://localhost:3100"),
+    applicationName: "MarioGame");
 ```
 
 ### Log Levels
 
 | Level | When to use | Color |
 |---|---|---|
-| `Trace` | Enter/exit methods, very detailed flow | Grey |
+| `Verbose` | Enter/exit methods, very detailed flow | Grey |
 | `Debug` | Variable values, entity state, collision checks | Cyan |
-| `Information` | Level loaded, save created, settings changed | Green |
-| `Warning` | Missing asset fallback, minor performance issue | Yellow |
+| `Information` | Level loaded, saved, settings changed | Green |
+| `Warning` | Missing asset fallback, minor perf issue | Yellow |
 | `Error` | Failed to load asset, physics glitch, unhandled case | Red |
-| `Critical` | Crash imminent, out of memory, fatal error | Red+white |
+| `Fatal` | Crash imminent, out of memory | Red+white |
+
+### Structured Logging
+
+```csharp
+// Always use structured properties — never string interpolation in log messages
+_logger.LogInformation("Player {PlayerId} collected {Item} at {Position}", id, item, pos);
+// Searchable in Seq/Grafana:  PlayerId=42 AND Item="Star"
+```
 
 ### Category Conventions
 
 ```csharp
-// Per class via DI
+// Via DI — logger is automatically scoped to the class
 private readonly ILogger<PlayerController> _logger;
 
-// Per system for cross-cutting
-private readonly ILogger _renderLogger = Log.ForContext("System", "Rendering");
+// Static Serilog context for non-DI classes
+private static readonly ILogger _log = Log.ForContext<AssetManager>();
 ```
 
 ### What to Log
@@ -407,29 +449,56 @@ private readonly ILogger _renderLogger = Log.ForContext("System", "Rendering");
 - Level load/unload (info)
 - Save/load operations (info)
 - Asset load failures (error)
-- Unhandled exceptions (critical)
+- Unhandled exceptions (fatal)
 - Settings changes (debug)
-- Performance warnings (> 16ms frame) (warning)
+- Performance warnings (>16ms frame) (warning)
 
 **NEVER log:**
-- Every frame's FPS (trace only, and only when requested)
-- Player position every frame (debug only, and rate-limited to 1Hz)
+- Every frame's FPS (verbose only, rate-limited)
+- Player position every frame (debug only, rate-limited to 1Hz)
 - Passwords, tokens, personal data
-- Full stack traces for expected errors (log the message only)
+- Full stack traces for expected errors (log message only)
 
 ### Log File
 
 | Property | Value |
 |---|---|
-| Path | `logs/mario.log` (next to executable) |
-| Max size | 10 MB |
-| Retention | 5 rotated files (`mario.1.log`, `mario.2.log`, ...) |
-| Format | `HH:mm:ss [LEVEL] Category: Message` |
+| Path | `logs/mario-.log` (next to executable) |
+| Rolling | Daily |
+| Retention | 14 files |
+| Format | `yyyy-MM-dd HH:mm:ss.fff [LEVEL] Source: Message` |
+
+### Seq (Local Log Viewer)
+
+- URL: `http://localhost:5341`
+- Setup: `docker run -d --name seq -e ACCEPT_EULA=Y -p 5341:80 datalust/seq`
+- Features: real-time search, structured querying, dashboarding, alerts
+- Free for up to 20 GB/day (more than enough for game dev)
+
+### Grafana + Loki (Production / Telemetry)
+
+- Loki URL: `http://localhost:3100`
+- Requires: Promtail or Grafana Alloy agent to ship logs
+- Dashboard: pre-built Serilog/Loki dashboard in Grafana
+- Setup (Docker):
+  ```powershell
+  docker run -d --name loki -p 3100:3100 grafana/loki
+  docker run -d --name grafana -p 3000:3000 grafana/grafana
+  ```
+
+### Environment Variables
+
+| Variable | Purpose |
+|---|---|
+| `MARIO_SEQ_KEY` | Optional API key for Seq ingestion |
+| `DOTNET_ENVIRONMENT` | `Development`, `Staging`, `Production` |
+| `MARIO_LOKI_URL` | Override Loki endpoint |
 
 ### In-Game Log Viewer
-- Press F4 to toggle log overlay (last 50 messages)
-- Filter by level (click level tabs)
+- Press **F4** to toggle overlay (last 50 messages)
+- Filter by log level (click level tabs)
 - Copy to clipboard button
+- Color-coded by level
 
 ---
 
