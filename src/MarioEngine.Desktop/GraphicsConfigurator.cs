@@ -19,7 +19,7 @@ internal static class GraphicsConfigurator
     {
         options.Title = Resources.Strings.Window_Title + VersionInfo.Current;
         options.Size = new Silk.NET.Maths.Vector2D<int>(parsed.Width, parsed.Height);
-        options.WindowBorder = parsed.Fullscreen ? WindowBorder.Hidden : WindowBorder.Resizable;
+        options.WindowBorder = WindowBorder.Resizable;
         options.VSync = true;
         options.API = new GraphicsAPI(
             ContextAPI.OpenGL,
