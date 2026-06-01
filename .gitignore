@@ -4,11 +4,13 @@ graphify-out/cost.json
 
 # Build
 build/
-bin/
-obj/
+**/[Bb]in/
+**/[Oo]bj/
 *.exe
 *.pdb
 *.dll
+*.exe.config
+*.nupkg
 
 # IDE
 .vs/
