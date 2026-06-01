@@ -14,13 +14,14 @@ internal sealed partial class MarioWindow
     /// Displays a splash screen for 3 seconds before starting the game.
     /// </summary>
     /// <param name="game">The game instance to wire up.</param>
-    public void WireGameEvents(Game game)
+    /// <param name="loggerFactory">Logger factory for creating typed subsystem loggers.</param>
+    public void WireGameEvents(Game game, ILoggerFactory loggerFactory)
     {
         var state = new GameStartupState();
         _startupState = state;
 
         var loadHandler = new MarioWindowLoadHandler(this);
-        var updateHandler = new MarioWindowUpdateHandler(game, state, _logger);
+        var updateHandler = new MarioWindowUpdateHandler(this, game, state, _logger, loggerFactory);
         var renderHandler = new MarioWindowRenderHandler(this, game, state);
         var closingHandler = new MarioWindowClosingHandler(game);
 

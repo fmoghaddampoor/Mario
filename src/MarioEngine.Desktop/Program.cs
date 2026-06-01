@@ -38,9 +38,10 @@ internal static class Program
             using var services = GameServiceProvider.CreateDefault();
             var game = services.Get<Game>();
             var logger = services.Get<ILogger<MarioWindow>>();
+            var loggerFactory = services.Get<ILoggerFactory>();
 
             using var marioWindow = MarioWindow.Create(args, logger, splashDuration);
-            marioWindow.WireGameEvents(game);
+            marioWindow.WireGameEvents(game, loggerFactory);
             marioWindow.Run();
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)

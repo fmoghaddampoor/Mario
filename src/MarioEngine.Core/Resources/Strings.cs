@@ -26,4 +26,10 @@ internal static class Strings
 
     /// <summary>Gets the "DI container initialized" log message.</summary>
     public static string DI_Container_Initialized => "DI container initialized";
+
+    /// <summary>Gets the "Debug overlay toggled on" log message.</summary>
+    public static string DebugOverlay_ToggledOn => "Debug overlay toggled on";
+
+    /// <summary>Gets the "Debug overlay toggled off" log message.</summary>
+    public static string DebugOverlay_ToggledOff => "Debug overlay toggled off";
 }
