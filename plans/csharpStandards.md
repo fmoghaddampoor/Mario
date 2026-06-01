@@ -139,10 +139,18 @@ DON'T:
 
 ## 11. Maximum Class Size
 
-- **Soft limit**: 300 lines per class (including braces, comments, blank lines)
-- **Hard limit**: 500 lines — anything over this must be refactored
-- **Exception**: Generated code, large switch expressions, or data-heavy builder classes (max 800 lines)
-- If a class exceeds 300 lines, split into smaller classes by responsibility
+- **Soft limit**: 100 lines per class (including braces, comments, blank lines)
+- **Hard limit**: 200 lines — anything over this must be refactored
+- **Exception**: Generated code, large switch expressions, or data-heavy builder classes (max 400 lines)
+- If a class exceeds 100 lines, split into multiple partial classes or separate files by responsibility
+- After completing any task, scan all modified/new .cs files and refactor any class that exceeds the limit
+
+## 12. Method Size
+
+- **Soft limit**: 30 lines per method
+- **Hard limit**: 50 lines — any method over this must be extracted into separate smaller methods or classes
+- Methods that perform distinct logical operations should be extracted into their own private methods or separate handler classes
+- After completing any task, check all modified methods and split any that exceed the limit
 
 ## 12. File Organization
 
