@@ -21,7 +21,8 @@
 | Editor | `14-editor/` | 452-1040 | 57 |
 | Build & CI | `15-build-ci/` | 474-1070 | 50 |
 | Polish | `16-polish/` | 494-1100 | 56 |
-| **Total** | | | **1064** |
+| Extras (infrastructure) | `17-extras/` | E001-E006 | 6 |
+| **Total** | | | **1070** |
 
 ## How to Use
 
