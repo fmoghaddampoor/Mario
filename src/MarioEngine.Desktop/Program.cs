@@ -4,13 +4,12 @@ using System;
 using MarioEngine.Core;
 using MarioEngine.Core.DependencyInjection;
 using MarioEngine.Core.Logging;
+using Microsoft.Extensions.Logging;
 using Serilog;
-using Silk.NET.OpenGL;
-using Silk.NET.Windowing;
 
 /// <summary>
-/// Application entry point. Creates the Silk.NET window, sets up logging,
-/// initializes the DI container, and wires the game lifecycle to window events.
+/// Application entry point. Creates the game window, sets up logging,
+/// initializes the DI container, and runs the game loop.
 /// </summary>
 internal static class Program
 {
@@ -28,43 +27,11 @@ internal static class Program
         {
             using var services = GameServiceProvider.CreateDefault();
             var game = services.Get<Game>();
+            var logger = services.Get<ILogger<MarioWindow>>();
 
-            var options = WindowOptions.Default;
-            options.Title = "Super Mario \u2014 v" + VersionInfo.Current;
-            options.Size = new Silk.NET.Maths.Vector2D<int>(1280, 720);
-            options.WindowBorder = WindowBorder.Resizable;
-            options.VSync = true;
-            options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.ForwardCompatible, new APIVersion(4, 6));
-
-            var window = Window.Create(options);
-
-            window.Load += () =>
-            {
-                Log.Information("Window opened");
-                game.Initialize();
-                game.LoadContent();
-            };
-
-            window.Update += (dt) =>
-            {
-                game.ProcessInput((float)dt);
-                game.Update((float)dt);
-            };
-
-            window.Render += (dt) =>
-            {
-                Time.Update((float)dt);
-                game.Render(0f);
-            };
-
-            window.Closing += () =>
-            {
-                Log.Information("Window closing");
-                game.Shutdown();
-            };
-
-            window.Run();
-            window.Dispose();
+            using var marioWindow = MarioWindow.Create(args, logger);
+            marioWindow.WireGameEvents(game);
+            marioWindow.Run();
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
         {
