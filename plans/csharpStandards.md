@@ -20,7 +20,7 @@
 | Enum values | PascalCase | `PlayerState.Running` |
 | Async methods | `XxxAsync` suffix | `LoadLevelAsync()` |
 | File name | Must match class name | `SpriteBatcher.cs` |
-| One class per file | Yes | (exceptions: small records/enums/extensions) |
+| One class per file | Yes | No nested classes; each class/interface/struct in its own file |
 
 ## 2. Style
 

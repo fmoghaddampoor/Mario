@@ -61,12 +61,4 @@ public static class LogConfiguration
 
         return new LogCloser();
     }
-
-    private sealed class LogCloser : IDisposable
-    {
-        public void Dispose()
-        {
-            Log.CloseAndFlush();
-        }
-    }
 }
