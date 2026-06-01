@@ -10,9 +10,16 @@
                 <ResourceDictionary Source="Styles/ButtonStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- Override system ComboBox popup background for dark theme -->
+            <!-- Override system colors for dark theme (ComboBox popup, menus, etc.) -->
             <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#16213E"/>
             <SolidColorBrush x:Key="{x:Static SystemColors.WindowTextBrushKey}" Color="#E0E0E0"/>
+            <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#16213E"/>
+            <SolidColorBrush x:Key="{x:Static SystemColors.ControlLightBrushKey}" Color="#1A1A2E"/>
+            <SolidColorBrush x:Key="{x:Static SystemColors.ControlDarkBrushKey}" Color="#0F3460"/>
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#E94560"/>
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="White"/>
+            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#2A4A7A"/>
+            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="#C0D0E0"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
