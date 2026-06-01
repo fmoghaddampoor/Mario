@@ -13,6 +13,7 @@
     <None Include="Shaders\splash.vert" CopyToOutputDirectory="PreserveNewest" />
     <None Include="Shaders\splash.frag" CopyToOutputDirectory="PreserveNewest" />
     <None Include="Shaders\star.frag" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Shaders\passthrough.frag" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Silk.NET.Windowing" />

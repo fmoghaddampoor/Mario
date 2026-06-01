@@ -29,6 +29,9 @@ internal sealed partial class SplashScreen : IDisposable
     /// <summary>Shader program for star pulsing.</summary>
     private readonly uint _starProgram;
 
+    /// <summary>Pure passthrough shader for overlay (no effects).</summary>
+    private readonly uint _passthroughProgram;
+
     /// <summary>Nebula layer texture (gradient + clouds).</summary>
     private readonly uint _nebulaTexture;
 
@@ -51,11 +54,12 @@ internal sealed partial class SplashScreen : IDisposable
     private float _elapsed;
 
     /// <summary>Initializes a new instance of the <see cref="SplashScreen"/> class.</summary>
-    private SplashScreen(GL gl, uint program, uint starProgram, uint nebulaTex, uint starsTex, uint overlayTex, uint vao, uint vbo, float displayDuration)
+    private SplashScreen(GL gl, uint program, uint starProgram, uint passthroughProgram, uint nebulaTex, uint starsTex, uint overlayTex, uint vao, uint vbo, float displayDuration)
     {
         _gl = gl;
         _program = program;
         _starProgram = starProgram;
+        _passthroughProgram = passthroughProgram;
         _nebulaTexture = nebulaTex;
         _starsTexture = starsTex;
         _overlayTexture = overlayTex;
@@ -77,6 +81,7 @@ internal sealed partial class SplashScreen : IDisposable
     {
         var program = CreateShaderProgram(gl);
         var starProgram = CreateStarProgram(gl);
+        var passthroughProgram = CreatePassthroughProgram(gl);
         var nebulaTex = LoadTexture(gl, NebulaPath);
         var starsTex = LoadTexture(gl, StarsPath);
         var overlayTex = LoadTexture(gl, OverlayPath);
@@ -84,7 +89,7 @@ internal sealed partial class SplashScreen : IDisposable
 
         Log.Information(Resources.Strings.Splash_Created);
 
-        return new SplashScreen(gl, program, starProgram, nebulaTex, starsTex, overlayTex, vao, vbo, displayDuration);
+        return new SplashScreen(gl, program, starProgram, passthroughProgram, nebulaTex, starsTex, overlayTex, vao, vbo, displayDuration);
     }
 
     /// <summary>Advances the splash timer by the given delta time.</summary>
@@ -99,6 +104,7 @@ internal sealed partial class SplashScreen : IDisposable
     {
         _gl.DeleteProgram(_program);
         _gl.DeleteProgram(_starProgram);
+        _gl.DeleteProgram(_passthroughProgram);
         _gl.DeleteTexture(_nebulaTexture);
         _gl.DeleteTexture(_starsTexture);
         _gl.DeleteTexture(_overlayTexture);

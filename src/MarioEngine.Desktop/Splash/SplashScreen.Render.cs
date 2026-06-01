@@ -3,8 +3,9 @@ namespace MarioEngine.Desktop;
 using Silk.NET.OpenGL;
 
 /// <summary>
-/// Renders splash layers in order: rotating nebula → static stars → static overlay.
-/// Nebula uses animated shader with mild UV drift; stars and overlay use simple texture pass.
+/// Renders splash layers in order: rotating nebula → pulsing stars → crisp text.
+/// Nebula uses animated shader with mild UV drift; stars pulse via separate shader;
+/// overlay uses pure passthrough shader (no effects, no artifacts).
 /// </summary>
 internal sealed partial class SplashScreen
 {
@@ -68,9 +69,11 @@ internal sealed partial class SplashScreen
         _gl.BindVertexArray(_vao);
         _gl.DrawArrays(PrimitiveType.Triangles, 0, 6);
 
-        // Layer 3: Overlay (orb + text, static)
+        // Layer 3: Overlay (text only, pure passthrough - no effects)
+        _gl.UseProgram(_passthroughProgram);
+        var overlayTexLoc = _gl.GetUniformLocation(_passthroughProgram, "uTexture");
         _gl.BindTexture(TextureTarget.Texture2D, _overlayTexture);
-        _gl.Uniform1(texLoc, 0);
+        _gl.Uniform1(overlayTexLoc, 0);
         _gl.BindVertexArray(_vao);
         _gl.DrawArrays(PrimitiveType.Triangles, 0, 6);
 

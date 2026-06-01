@@ -29,4 +29,13 @@ internal sealed partial class SplashScreen
     {
         return ShaderLoader.LoadProgram(gl, ShaderPath("splash.vert"), ShaderPath("star.frag"));
     }
+
+    /// <summary>
+    /// Creates a pure passthrough shader program (no uTime, no effects).
+    /// Used for the text overlay layer to avoid any UV or pulse artifacts.
+    /// </summary>
+    private static uint CreatePassthroughProgram(GL gl)
+    {
+        return ShaderLoader.LoadProgram(gl, ShaderPath("splash.vert"), ShaderPath("passthrough.frag"));
+    }
 }
