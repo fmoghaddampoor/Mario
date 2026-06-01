@@ -8,6 +8,11 @@ using StbImageSharp;
 /// </summary>
 public sealed partial class TextureManager
 {
+    /// <summary>
+    /// Uploads a decoded PNG image to the GPU as an OpenGL texture with mipmaps.
+    /// </summary>
+    /// <param name="image">The decoded image data (RGBA).</param>
+    /// <returns>OpenGL texture handle.</returns>
     private uint UploadToGpu(ImageResult image)
     {
         var handle = _gl.GenTexture();

@@ -100,7 +100,7 @@ public sealed class Camera2D
     /// <summary>
     /// Updates the shake animation. Call once per frame.
     /// </summary>
-    /// <param name="dt">Delta time in seconds.</param>
+    /// <param name="dt">Delta time in seconds since the last frame.</param>
 #pragma warning disable CA5394 // Random is for visual effects, not security
     public void Update(float dt)
     {
