@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MarioEngine.Core/MarioEngine.Core.csproj" />
+    <Project Path="src/MarioEngine.Desktop/MarioEngine.Desktop.csproj" />
+    <Project Path="src/MarioEngine.Game/MarioEngine.Game.csproj" />
+  </Folder>
+</Solution>
