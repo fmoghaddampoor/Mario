@@ -2,6 +2,7 @@ namespace MarioEngine.Core.Audio;
 
 using System;
 using MarioEngine.Core.Audio.Music;
+using MarioEngine.Core.Audio.Sfx;
 using MarioEngine.Core.Resources;
 using Microsoft.Extensions.Logging;
 using Silk.NET.OpenAL;
@@ -33,10 +34,14 @@ public sealed partial class AudioManager
             var renderer = _al.GetStateProperty(StateString.Renderer);
             var version = _al.GetStateProperty(StateString.Version);
 
+            _busSystem = new AudioBusSystem();
+            _busSystem.MasterVolume = _config.MasterVolume;
+
             _al.SetListenerProperty(ListenerFloat.Gain, _config.MasterVolume);
             _al.SetListenerProperty(ListenerVector3.Position, 0f, 0f, 0f);
 
             _sfx = new SfxLibrary(_al, _logger);
+            _sfxPool = new SfxPool(_al, _busSystem, _logger);
             _music = new MusicManager(_al, _logger);
             _initialized = true;
 
@@ -62,8 +67,11 @@ public sealed partial class AudioManager
         _initialized = false;
         _music?.Dispose();
         _music = null;
+        _sfxPool?.Dispose();
+        _sfxPool = null;
         _sfx?.UnloadAll();
         _sfx = null;
+        _busSystem = null;
         _al?.Dispose();
         _al = null;
         _context?.Dispose();

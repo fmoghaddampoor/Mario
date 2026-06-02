@@ -62,4 +62,7 @@ internal static class Strings
 
     /// <summary>Gets the "Music file not found" log message.</summary>
     public static string Music_NotFound => "Music not found: {Path}";
+
+    /// <summary>Gets the "SFX source stolen for priority" log message.</summary>
+    public static string Sfx_SourceStolen => "SFX source stolen: priority {Priority} sound replaced by higher priority";
 }

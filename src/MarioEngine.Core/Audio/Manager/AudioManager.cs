@@ -2,6 +2,7 @@ namespace MarioEngine.Core.Audio;
 
 using System;
 using MarioEngine.Core.Audio.Music;
+using MarioEngine.Core.Audio.Sfx;
 using MarioEngine.Core.Config;
 using MarioEngine.Core.Resources;
 using Microsoft.Extensions.Logging;
@@ -10,7 +11,7 @@ using Silk.NET.OpenAL;
 /// <summary>
 /// Manages the OpenAL audio device and context lifecycle using the high-level
 /// <see cref="AudioContext"/> wrapper. Provides the AL API instance, volume control,
-/// and graceful silent fallback if OpenAL is unavailable.
+/// SFX pool, music streaming, and graceful silent fallback if OpenAL is unavailable.
 /// Call <see cref="Initialize"/> after the game starts, <see cref="Dispose"/> on shutdown.
 /// </summary>
 public sealed partial class AudioManager : IDisposable
@@ -29,6 +30,12 @@ public sealed partial class AudioManager : IDisposable
 
     /// <summary>Library of loaded sound effect buffers.</summary>
     private SfxLibrary? _sfx;
+
+    /// <summary>Pool of OpenAL sources for SFX playback with priority recycling.</summary>
+    private SfxPool? _sfxPool;
+
+    /// <summary>Audio bus system managing per-bus volumes and mute states.</summary>
+    private AudioBusSystem? _busSystem;
 
     /// <summary>Music streaming manager for background tracks.</summary>
     private MusicManager? _music;
@@ -52,17 +59,14 @@ public sealed partial class AudioManager : IDisposable
     /// <summary>Gets the low-level AL API instance. Null in silent fallback mode.</summary>
     public AL? AL => _al;
 
-    /// <summary>Gets the master volume (0.0 to 1.0).</summary>
-    public float MasterVolume => _config.MasterVolume;
-
-    /// <summary>Gets the music bus volume (0.0 to 1.0).</summary>
-    public float MusicVolume => _config.MusicVolume;
-
-    /// <summary>Gets the SFX bus volume (0.0 to 1.0).</summary>
-    public float SfxVolume => _config.SfxVolume;
+    /// <summary>Gets the audio bus system for volume and mute control.</summary>
+    public AudioBusSystem? BusSystem => _busSystem;
 
     /// <summary>Gets the SFX library for loading and caching sound effect buffers.</summary>
     public SfxLibrary? Sfx => _sfx;
+
+    /// <summary>Gets the SFX pool for playing sound effects.</summary>
+    public SfxPool? SfxPool => _sfxPool;
 
     /// <summary>Gets the music manager for streaming background tracks.</summary>
     public MusicManager? Music => _music;
@@ -71,23 +75,28 @@ public sealed partial class AudioManager : IDisposable
     public bool IsInitialized => _initialized;
 
     /// <summary>
-    /// Called every frame. Refills streaming music buffers.
+    /// Called every frame. Refills streaming music buffers and reclaims SFX sources.
     /// </summary>
     public void Update()
     {
         _music?.Update();
+        _sfxPool?.Update();
     }
 
     /// <summary>
-    /// Sets the master volume and applies it to the OpenAL listener.
+    /// Sets the master volume on both the bus system and OpenAL listener.
     /// </summary>
     /// <param name="volume">Volume level from 0.0 (silent) to 1.0 (full).</param>
     public void SetMasterVolume(float volume)
     {
-        _config.MasterVolume = Math.Clamp(volume, 0f, 1f);
+        if (_busSystem != null)
+        {
+            _busSystem.MasterVolume = volume;
+        }
+
         if (_initialized && _al != null)
         {
-            _al.SetListenerProperty(ListenerFloat.Gain, _config.MasterVolume);
+            _al.SetListenerProperty(ListenerFloat.Gain, volume);
         }
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 /// <summary>
 /// Contains the <see cref="Dispose"/> method for the <see cref="AudioManager"/> class.
-/// Releases OpenAL device, context, and SFX library resources.
+/// Releases OpenAL device, context, SFX pool, and music resources.
 /// </summary>
 public sealed partial class AudioManager
 {
@@ -21,6 +21,9 @@ public sealed partial class AudioManager
         _initialized = false;
         _music?.Dispose();
         _music = null;
+        _sfxPool?.Dispose();
+        _sfxPool = null;
+        _busSystem = null;
         _sfx?.UnloadAll();
         _sfx = null;
         _al?.Dispose();
