@@ -1,9 +1,9 @@
 using System;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles dash attack movement.</summary>
-internal sealed class PlayerDashAttack
+public sealed class PlayerDashAttack
 {
     /// <summary>Whether the player is currently dashing.</summary>
     public bool IsDashing { get; private set; }

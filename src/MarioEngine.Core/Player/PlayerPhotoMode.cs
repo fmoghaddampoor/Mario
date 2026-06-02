@@ -1,9 +1,9 @@
 using System;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles photo mode state.</summary>
-internal sealed class PlayerPhotoMode
+public sealed class PlayerPhotoMode
 {
     /// <summary>Whether photo mode is currently active.</summary>
     public bool IsActive { get; private set; }

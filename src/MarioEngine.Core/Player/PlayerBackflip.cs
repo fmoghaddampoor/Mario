@@ -1,10 +1,10 @@
 using System;
 using System.Numerics;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles player backflip movement.</summary>
-internal sealed class PlayerBackflip
+public sealed class PlayerBackflip
 {
     /// <summary>Whether the player is currently backflipping.</summary>
     public bool IsBackflipping { get; private set; }

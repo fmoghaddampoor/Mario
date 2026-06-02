@@ -1,10 +1,10 @@
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 using System;
 using System.Numerics;
 
 /// <summary>Provides smooth camera follow behaviour with configurable offset and dead-zone bounds.</summary>
-internal sealed class PlayerCameraFollower
+public sealed class PlayerCameraFollower
 {
     private float _minX = float.MinValue;
     private float _maxX = float.MaxValue;

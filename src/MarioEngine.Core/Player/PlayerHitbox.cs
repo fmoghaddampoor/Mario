@@ -1,9 +1,9 @@
 using System.Numerics;
 using MarioEngine.Core.Physics.Collision;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
-internal sealed class PlayerHitbox
+public sealed class PlayerHitbox
 {
     public Aabb GetHitbox(Vector2 position, Vector2 size)
     {

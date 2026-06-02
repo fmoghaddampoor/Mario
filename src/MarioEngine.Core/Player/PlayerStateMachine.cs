@@ -1,6 +1,6 @@
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
-internal sealed class PlayerStateMachine
+public sealed class PlayerStateMachine
 {
     public enum PlayerState
     {

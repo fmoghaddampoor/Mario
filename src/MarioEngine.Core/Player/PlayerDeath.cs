@@ -1,9 +1,9 @@
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 using System;
 
 /// <summary>Handles the player death sequence, animation timing, and completion events.</summary>
-internal sealed class PlayerDeathHandler
+public sealed class PlayerDeathHandler
 {
     /// <summary>Gets whether the player is currently in the death state.</summary>
     public bool IsDying { get; private set; }

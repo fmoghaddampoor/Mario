@@ -6,7 +6,7 @@ using System.Numerics;
 /// Axis-Aligned Bounding Box for collision detection.
 /// Defined by a center position and half-extents.
 /// </summary>
-internal readonly struct Aabb
+public readonly struct Aabb
 {
     /// <summary>Center of the AABB in world units.</summary>
     internal readonly Vector2 Center;

@@ -1,10 +1,10 @@
 using System;
 using System.Numerics;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles spin jump movement and state.</summary>
-internal sealed class PlayerSpinJump
+public sealed class PlayerSpinJump
 {
     /// <summary>Whether the player is currently spinning.</summary>
     public bool IsSpinning { get; private set; }

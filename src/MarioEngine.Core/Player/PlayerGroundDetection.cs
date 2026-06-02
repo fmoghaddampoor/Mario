@@ -1,9 +1,9 @@
 using System.Numerics;
 using MarioEngine.Core.Physics.Collision;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
-internal sealed class PlayerGroundDetection
+public sealed class PlayerGroundDetection
 {
     public enum SurfaceType
     {

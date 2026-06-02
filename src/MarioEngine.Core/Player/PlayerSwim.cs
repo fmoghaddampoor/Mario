@@ -1,10 +1,10 @@
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 using System;
 using System.Numerics;
 
 /// <summary>Controls swimming movement, buoyancy, and breath tracking.</summary>
-internal sealed class PlayerSwim
+public sealed class PlayerSwim
 {
     /// <summary>Gets whether the player is currently swimming.</summary>
     public bool IsSwimming { get; set; }

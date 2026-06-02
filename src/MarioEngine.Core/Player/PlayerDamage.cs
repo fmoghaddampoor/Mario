@@ -1,6 +1,6 @@
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
-internal sealed class PlayerDamage
+public sealed class PlayerDamage
 {
     public bool IsInvincible { get; private set; }
     public float InvincibilityDuration { get; set; } = 2f;

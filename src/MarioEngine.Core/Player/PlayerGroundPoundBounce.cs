@@ -1,10 +1,10 @@
 using System;
 using System.Numerics;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles the bounce after a ground pound.</summary>
-internal sealed class PlayerGroundPoundBounce
+public sealed class PlayerGroundPoundBounce
 {
     /// <summary>Whether the player is currently bouncing.</summary>
     public bool IsBouncing { get; private set; }

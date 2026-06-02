@@ -1,9 +1,9 @@
 using System;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles player roll dodge state and timing.</summary>
-internal sealed class PlayerRoll
+public sealed class PlayerRoll
 {
     /// <summary>Whether the player is currently rolling.</summary>
     public bool IsRolling { get; private set; }

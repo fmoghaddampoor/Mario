@@ -1,10 +1,10 @@
 using System;
 using System.Numerics;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles player sideflip movement.</summary>
-internal sealed class PlayerSideflip
+public sealed class PlayerSideflip
 {
     /// <summary>Whether the player is currently sideflipping.</summary>
     public bool IsSideflipping { get; private set; }

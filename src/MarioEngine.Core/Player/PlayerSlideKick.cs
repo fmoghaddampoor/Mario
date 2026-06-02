@@ -1,9 +1,9 @@
 using System;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles slide kick attack.</summary>
-internal sealed class PlayerSlideKick
+public sealed class PlayerSlideKick
 {
     /// <summary>Whether the player is currently kicking.</summary>
     public bool IsKicking { get; private set; }

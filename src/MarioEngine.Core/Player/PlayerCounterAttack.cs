@@ -1,9 +1,9 @@
 using System;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles counter attack timing window.</summary>
-internal sealed class PlayerCounterAttack
+public sealed class PlayerCounterAttack
 {
     /// <summary>Whether the player is currently countering.</summary>
     public bool IsCountering { get; private set; }

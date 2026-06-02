@@ -1,8 +1,8 @@
 using System.Numerics;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
-internal sealed class PlayerCrouch
+public sealed class PlayerCrouch
 {
     public bool IsCrouching { get; private set; }
     public bool IsSliding { get; private set; }

@@ -1,8 +1,8 @@
 using System.Numerics;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
-internal sealed class PlayerMovement
+public sealed class PlayerMovement
 {
     public float WalkSpeed { get; set; } = 200f;
     public float RunSpeed { get; set; } = 350f;

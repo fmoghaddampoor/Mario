@@ -1,9 +1,9 @@
 using System;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Flags for which extended abilities are available to the player.</summary>
-internal sealed class PlayerExtendedAbilities
+public sealed class PlayerExtendedAbilities
 {
     /// <summary>Whether the player can perform a spin jump.</summary>
     public bool CanSpinJump { get; set; }

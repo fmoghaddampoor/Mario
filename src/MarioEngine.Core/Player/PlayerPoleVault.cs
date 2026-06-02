@@ -1,10 +1,10 @@
 using System;
 using System.Numerics;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles player pole vault movement.</summary>
-internal sealed class PlayerPoleVault
+public sealed class PlayerPoleVault
 {
     /// <summary>Whether the player is currently vaulting.</summary>
     public bool IsVaulting { get; private set; }

@@ -1,6 +1,6 @@
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
-internal sealed class PlayerJump
+public sealed class PlayerJump
 {
     public float JumpVelocity { get; set; } = -450f;
     public float DoubleJumpVelocity { get; set; } = -400f;
@@ -40,7 +40,7 @@ internal sealed class PlayerJump
         return 0;
     }
 
-    internal sealed class CoyoteTimer
+    public sealed class CoyoteTimer
     {
         public float Time { get; set; }
         public float Duration { get; set; } = 0.1f;
@@ -54,7 +54,7 @@ internal sealed class PlayerJump
         }
     }
 
-    internal sealed class JumpBuffer
+    public sealed class JumpBuffer
     {
         public float Time { get; set; }
         public float Duration { get; set; } = 0.05f;

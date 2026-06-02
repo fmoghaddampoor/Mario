@@ -1,10 +1,10 @@
 using System;
 using System.Numerics;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles grappling hook ability.</summary>
-internal sealed class PlayerGrapplingHook
+public sealed class PlayerGrapplingHook
 {
     /// <summary>Whether the grappling hook is active.</summary>
     public bool IsGrappling { get; private set; }

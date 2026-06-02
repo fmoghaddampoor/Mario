@@ -1,10 +1,10 @@
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 using System;
 using System.Numerics;
 
 /// <summary>Handles climbing behaviour on vines and vertical surfaces.</summary>
-internal sealed class PlayerClimbing
+public sealed class PlayerClimbing
 {
     /// <summary>Gets whether the player is currently climbing.</summary>
     public bool IsClimbing { get; private set; }

@@ -1,9 +1,9 @@
 using System;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles temporary speed boost after taking damage.</summary>
-internal sealed class PlayerDamageBoost
+public sealed class PlayerDamageBoost
 {
     /// <summary>Whether the damage boost is active.</summary>
     public bool IsBoosting { get; private set; }

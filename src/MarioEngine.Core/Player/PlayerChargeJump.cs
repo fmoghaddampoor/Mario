@@ -1,9 +1,9 @@
 using System;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles charge jump mechanic.</summary>
-internal sealed class PlayerChargeJump
+public sealed class PlayerChargeJump
 {
     /// <summary>Whether the player is currently charging.</summary>
     public bool IsCharging { get; private set; }

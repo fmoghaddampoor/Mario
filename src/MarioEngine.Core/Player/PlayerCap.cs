@@ -1,10 +1,10 @@
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 using System;
 using System.Numerics;
 
 /// <summary>Manages the player's cap, its position offset, and loss/retrieval state.</summary>
-internal sealed class PlayerCapPhysics
+public sealed class PlayerCapPhysics
 {
     /// <summary>Gets whether the player currently has their cap.</summary>
     public bool HasCap { get; private set; } = true;

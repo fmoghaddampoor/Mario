@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles bubble blowing ability.</summary>
-internal sealed class PlayerBubbleBlower
+public sealed class PlayerBubbleBlower
 {
     /// <summary>Whether the player is currently blowing bubbles.</summary>
     public bool IsBlowing { get; set; }

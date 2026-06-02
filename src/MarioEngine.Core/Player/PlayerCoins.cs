@@ -1,9 +1,9 @@
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 using System;
 
 /// <summary>Manages coin collection, spending, and star coin tracking.</summary>
-internal sealed class PlayerCoinManager
+public sealed class PlayerCoinManager
 {
     /// <summary>Number of coins required to earn an extra life.</summary>
     public static readonly int CoinsPerLife = 100;

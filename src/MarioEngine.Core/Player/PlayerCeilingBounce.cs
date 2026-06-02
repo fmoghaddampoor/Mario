@@ -1,10 +1,10 @@
 using System;
 using System.Numerics;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles downward bounce off ceilings.</summary>
-internal sealed class PlayerCeilingBounce
+public sealed class PlayerCeilingBounce
 {
     /// <summary>Whether the player is currently bouncing off a ceiling.</summary>
     public bool IsBouncing { get; private set; }

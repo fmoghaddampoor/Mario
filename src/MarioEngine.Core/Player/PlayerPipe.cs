@@ -1,10 +1,10 @@
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 using System;
 using System.Numerics;
 
 /// <summary>Handles pipe travel transitions including positioning and timing.</summary>
-internal sealed class PlayerPipeTravel
+public sealed class PlayerPipeTravel
 {
     /// <summary>Gets whether the player is currently traveling through a pipe.</summary>
     public bool IsTraveling { get; private set; }

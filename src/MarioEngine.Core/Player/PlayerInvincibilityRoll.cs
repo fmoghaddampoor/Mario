@@ -1,9 +1,9 @@
 using System;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles invincibility roll state and timing.</summary>
-internal sealed class PlayerInvincibilityRoll
+public sealed class PlayerInvincibilityRoll
 {
     /// <summary>Whether the player is currently rolling.</summary>
     public bool IsRolling { get; private set; }

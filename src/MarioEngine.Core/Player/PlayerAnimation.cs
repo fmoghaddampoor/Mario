@@ -1,6 +1,6 @@
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
-internal sealed class PlayerAnimationController
+public sealed class PlayerAnimationController
 {
     public enum AnimationState
     {

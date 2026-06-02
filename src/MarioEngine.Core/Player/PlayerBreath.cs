@@ -1,9 +1,9 @@
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 using System;
 
 /// <summary>Manages the player's breath meter for underwater sections.</summary>
-internal sealed class PlayerBreathMeter
+public sealed class PlayerBreathMeter
 {
     /// <summary>Gets or sets the maximum breath capacity in seconds.</summary>
     public float MaxBreath { get; set; } = 30f;

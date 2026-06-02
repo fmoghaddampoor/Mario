@@ -1,10 +1,10 @@
 using System;
 using System.Numerics;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles cap throwing ability.</summary>
-internal sealed class PlayerCapThrow
+public sealed class PlayerCapThrow
 {
     /// <summary>Whether the cap is currently thrown.</summary>
     public bool IsThrowing { get; private set; }

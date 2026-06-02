@@ -1,9 +1,9 @@
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 using System;
 
 /// <summary>Manages the player's score, high score, and score multiplier.</summary>
-internal sealed class PlayerScore
+public sealed class PlayerScore
 {
     /// <summary>Gets the current score.</summary>
     public int Score { get; private set; }

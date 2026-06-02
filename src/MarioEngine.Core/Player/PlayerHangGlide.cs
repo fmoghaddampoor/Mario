@@ -1,10 +1,10 @@
 using System;
 using System.Numerics;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles player hang gliding movement.</summary>
-internal sealed class PlayerHangGlide
+public sealed class PlayerHangGlide
 {
     /// <summary>Whether the player is currently gliding.</summary>
     public bool IsGliding { get; private set; }

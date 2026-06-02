@@ -1,10 +1,10 @@
 using System;
 using System.Numerics;
 
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 /// <summary>Handles shell surfing movement.</summary>
-internal sealed class PlayerShellSurf
+public sealed class PlayerShellSurf
 {
     /// <summary>Whether the player is currently surfing.</summary>
     public bool IsSurfing { get; private set; }

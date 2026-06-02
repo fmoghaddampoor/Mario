@@ -1,6 +1,6 @@
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
-internal sealed class PlayerPowerUpManager
+public sealed class PlayerPowerUpManager
 {
     public enum PowerUp
     {

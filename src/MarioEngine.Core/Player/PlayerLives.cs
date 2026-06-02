@@ -1,9 +1,9 @@
-namespace MarioEngine.Core.Player;
+namespace MarioEngine.Core.GamePlayer;
 
 using System;
 
 /// <summary>Manages the player's life count and game-over state.</summary>
-internal sealed class PlayerLives
+public sealed class PlayerLives
 {
     private int _lives = 3;
     private int _extraLifeThreshold = 100;
