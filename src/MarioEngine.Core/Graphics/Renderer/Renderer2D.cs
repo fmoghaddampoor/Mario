@@ -50,7 +50,20 @@ public sealed class Renderer2D
     public uint WhiteTexture => _whiteTexture;
 
     /// <summary>
-    /// Begins a new frame. Call once per frame before any draw methods.
+    /// Clears the screen with the specified color. Call before Begin() each frame.
+    /// </summary>
+    /// <param name="r">Red component (0-1).</param>
+    /// <param name="g">Green component (0-1).</param>
+    /// <param name="b">Blue component (0-1).</param>
+    /// <param name="a">Alpha component (0-1).</param>
+    public void Clear(float r = 0f, float g = 0f, float b = 0f, float a = 1f)
+    {
+        _gl.ClearColor(r, g, b, a);
+        _gl.Clear(ClearBufferMask.ColorBufferBit);
+    }
+
+    /// <summary>
+    /// Begins a new frame. Call once per frame after Clear() and before any draw methods.
     /// </summary>
     public void Begin()
     {

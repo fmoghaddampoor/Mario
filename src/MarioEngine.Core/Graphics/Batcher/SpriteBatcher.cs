@@ -48,6 +48,16 @@ public sealed partial class SpriteBatcher : IDisposable
     /// <summary>OpenGL index buffer object handle for static quad indices.</summary>
     private readonly uint _ibo;
 
+    /// <summary>Shader program handle to bind before drawing. 0 = use fixed function (not available in core profile).</summary>
+    private uint _shaderProgram;
+
+    /// <summary>Gets or sets the shader program handle to bind before drawing.</summary>
+    public uint ShaderProgram
+    {
+        get => _shaderProgram;
+        set => _shaderProgram = value;
+    }
+
     /// <summary>True after GPU resources have been allocated.</summary>
     private readonly bool _initialized;
 

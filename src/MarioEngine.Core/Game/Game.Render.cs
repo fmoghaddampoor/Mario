@@ -44,6 +44,7 @@ public partial class Game
             return;
         }
 
+        _renderer.Clear(0.1f, 0.1f, 0.18f);
         _renderer.Begin();
 
         // Render UI screens

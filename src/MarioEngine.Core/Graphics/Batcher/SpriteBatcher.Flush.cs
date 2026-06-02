@@ -20,6 +20,11 @@ public sealed partial class SpriteBatcher
             return;
         }
 
+        if (_shaderProgram != 0)
+        {
+            _gl.UseProgram(_shaderProgram);
+        }
+
         _gl.BindVertexArray(_vao);
         _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo);
 
