@@ -43,6 +43,7 @@ public sealed partial class AudioManager
             _sfx = new SfxLibrary(_al, _logger);
             _sfxPool = new SfxPool(_al, _busSystem, _logger);
             _spatial = new SfxSpatial(_al);
+            _ambient = new AmbientManager(_al, _logger);
             _music = new MusicManager(_al, _logger);
             _initialized = true;
 
@@ -68,6 +69,8 @@ public sealed partial class AudioManager
         _initialized = false;
         _music?.Dispose();
         _music = null;
+        _ambient?.Dispose();
+        _ambient = null;
         _spatial = null;
         _sfxPool?.Dispose();
         _sfxPool = null;

@@ -1,6 +1,7 @@
 namespace MarioEngine.Core.Audio;
 
 using System;
+using System.Collections.Generic;
 using MarioEngine.Core.Audio.Music;
 using MarioEngine.Core.Audio.Sfx;
 using MarioEngine.Core.Config;
@@ -11,7 +12,7 @@ using Silk.NET.OpenAL;
 /// <summary>
 /// Manages the OpenAL audio device and context lifecycle using the high-level
 /// <see cref="AudioContext"/> wrapper. Provides the AL API instance, volume control,
-/// SFX pool, music streaming, and graceful silent fallback if OpenAL is unavailable.
+/// SFX pool, music streaming, ambient sounds, profiling, and graceful silent fallback.
 /// Call <see cref="Initialize"/> after the game starts, <see cref="Dispose"/> on shutdown.
 /// </summary>
 public sealed partial class AudioManager : IDisposable
@@ -21,6 +22,15 @@ public sealed partial class AudioManager : IDisposable
 
     /// <summary>Audio configuration for volume levels.</summary>
     private readonly AudioConfig _config;
+
+    /// <summary>Audio performance profiler.</summary>
+    private readonly AudioProfiler _profiler = new AudioProfiler();
+
+    /// <summary>Delayed SFX requests queued for future playback.</summary>
+    private readonly List<(SoundBuffer Buffer, int Priority, AudioBus Bus, float Delay, float Elapsed)> _delayedSfx;
+
+    /// <summary>Library of registered audio cues keyed by name.</summary>
+    private readonly Dictionary<string, AudioCue> _cueLibrary;
 
     /// <summary>High-level OpenAL audio context wrapper. Null in silent fallback mode.</summary>
     private AudioContext? _context;
@@ -43,6 +53,9 @@ public sealed partial class AudioManager : IDisposable
     /// <summary>Music streaming manager for background tracks.</summary>
     private MusicManager? _music;
 
+    /// <summary>Ambient sound manager for looping environmental audio.</summary>
+    private AmbientManager? _ambient;
+
     /// <summary>True after successful initialization.</summary>
     private bool _initialized;
 
@@ -57,6 +70,8 @@ public sealed partial class AudioManager : IDisposable
     {
         _config = config ?? throw new ArgumentNullException(nameof(config));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _delayedSfx = new List<(SoundBuffer, int, AudioBus, float, float)>();
+        _cueLibrary = new Dictionary<string, AudioCue>(StringComparer.OrdinalIgnoreCase);
     }
 
     /// <summary>Gets the low-level AL API instance. Null in silent fallback mode.</summary>
@@ -74,35 +89,18 @@ public sealed partial class AudioManager : IDisposable
     /// <summary>Gets the spatial audio helper for 3D positioning and effects.</summary>
     public SfxSpatial? Spatial => _spatial;
 
+    /// <summary>Gets the ambient manager for looping environmental sounds.</summary>
+    public AmbientManager? Ambient => _ambient;
+
     /// <summary>Gets the music manager for streaming background tracks.</summary>
     public MusicManager? Music => _music;
 
+    /// <summary>Gets the audio profiler for performance statistics.</summary>
+    public AudioProfiler Profiler => _profiler;
+
+    /// <summary>Gets the library of registered audio cues.</summary>
+    public IReadOnlyDictionary<string, AudioCue> CueLibrary => _cueLibrary;
+
     /// <summary>Gets a value indicating whether OpenAL was initialized successfully.</summary>
     public bool IsInitialized => _initialized;
-
-    /// <summary>
-    /// Called every frame. Refills streaming music buffers and reclaims SFX sources.
-    /// </summary>
-    public void Update()
-    {
-        _music?.Update();
-        _sfxPool?.Update();
-    }
-
-    /// <summary>
-    /// Sets the master volume on both the bus system and OpenAL listener.
-    /// </summary>
-    /// <param name="volume">Volume level from 0.0 (silent) to 1.0 (full).</param>
-    public void SetMasterVolume(float volume)
-    {
-        if (_busSystem != null)
-        {
-            _busSystem.MasterVolume = volume;
-        }
-
-        if (_initialized && _al != null)
-        {
-            _al.SetListenerProperty(ListenerFloat.Gain, volume);
-        }
-    }
 }

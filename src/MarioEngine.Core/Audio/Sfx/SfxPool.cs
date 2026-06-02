@@ -9,7 +9,7 @@ using Silk.NET.OpenAL;
 /// Supports priority-based recycling when all sources are in use.
 /// Call <see cref="Update"/> every frame to reclaim finished sources.
 /// </summary>
-public sealed class SfxPool : IDisposable
+public sealed partial class SfxPool : IDisposable
 {
     /// <summary>Default number of pooled OpenAL sources.</summary>
     private const int PoolSize = 16;
@@ -79,10 +79,11 @@ public sealed class SfxPool : IDisposable
     /// Plays a sound buffer on an available source.
     /// If all sources are in use, the lowest-priority active sound is stopped.
     /// </summary>
-    /// <param name="buffer">The sound buffer to play.</param>
+    /// <param name="buffer">The sound buffer to play. Must not be null.</param>
     /// <param name="priority">Priority level (higher = more important, default 0).</param>
     /// <param name="bus">Audio bus the sound belongs to.</param>
     /// <returns>The SfxInstance, or null if all sources are busy with higher-priority sounds.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if buffer is null.</exception>
     public SfxInstance? Play(SoundBuffer buffer, int priority = 0, AudioBus bus = AudioBus.Sfx)
     {
         ArgumentNullException.ThrowIfNull(buffer);
@@ -111,63 +112,6 @@ public sealed class SfxPool : IDisposable
         _al.SourcePlay(instance.Source);
 
         return instance;
-    }
-
-    /// <summary>
-    /// Called every frame. Reclaims sources whose playback has finished.
-    /// </summary>
-    public void Update()
-    {
-        for (var i = 0; i < PoolSize; i++)
-        {
-            var instance = _instances[i];
-            if (!instance.InUse)
-            {
-                continue;
-            }
-
-            int state;
-            unsafe
-            {
-                _al.GetSourceProperty(instance.Source, GetSourceInteger.SourceState, &state);
-            }
-
-            if (state != (int)SourceState.Playing && state != (int)SourceState.Paused)
-            {
-                instance.InUse = false;
-                _al.SourceStop(instance.Source);
-                unsafe
-                {
-                    var queued = 0;
-                    _al.GetSourceProperty(instance.Source, GetSourceInteger.BuffersQueued, &queued);
-                    if (queued > 0)
-                    {
-                        fixed (uint* buf = _unqueueBuffer)
-                        {
-                            _al.SourceUnqueueBuffers(instance.Source, queued, buf);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /// <summary>Releases all OpenAL sources.</summary>
-    public void Dispose()
-    {
-        if (_disposed)
-        {
-            return;
-        }
-
-        _disposed = true;
-
-        for (var i = 0; i < PoolSize; i++)
-        {
-            _instances[i].InUse = false;
-            _al.SourceStop(_sources[i]);
-            _al.DeleteSource(_sources[i]);
-        }
     }
 
     /// <summary>
