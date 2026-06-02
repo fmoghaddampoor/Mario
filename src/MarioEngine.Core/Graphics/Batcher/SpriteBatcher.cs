@@ -90,7 +90,6 @@ public sealed partial class SpriteBatcher : IDisposable
 
         // Create GPU resources
         var maxIndices = maxQuads * IndicesPerQuad;
-        var nullPtr = IntPtr.Zero;
 
         _vao = gl.GenVertexArray();
         _vbo = gl.GenBuffer();
@@ -99,7 +98,10 @@ public sealed partial class SpriteBatcher : IDisposable
         gl.BindVertexArray(_vao);
 
         gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo);
-        gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(MaxVertices * VertexStride), in nullPtr, BufferUsageARB.DynamicDraw);
+        unsafe
+        {
+            gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(MaxVertices * VertexStride), null, BufferUsageARB.DynamicDraw);
+        }
 
         gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, _ibo);
         unsafe

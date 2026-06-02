@@ -6,6 +6,7 @@ using MarioEngine.Core.Debug;
 using MarioEngine.Core.Graphics;
 using MarioEngine.Core.Graphics.Font;
 using MarioEngine.Core.Resources;
+using MarioEngine.Core.UI;
 using Microsoft.Extensions.Logging;
 
 #pragma warning disable CA1001 // AudioManager disposed in Shutdown()
@@ -38,6 +39,9 @@ public partial class Game
     /// <summary>Bitmap font for text rendering (loaded during content load).</summary>
     private BitmapFont? _font;
 
+    /// <summary>UI manager for menu and HUD state.</summary>
+    private readonly UIManager _ui = new UIManager();
+
     /// <summary>Initializes a new instance of the <see cref="Game"/> class.</summary>
     /// <param name="config">Game configuration with audio and other settings.</param>
     /// <param name="logger">Logger instance for this class.</param>
@@ -58,6 +62,9 @@ public partial class Game
 
     /// <summary>Gets the audio manager for this game session.</summary>
     public AudioManager Audio => _audio;
+
+    /// <summary>Gets the UI manager for menus and HUD.</summary>
+    public UIManager UI => _ui;
 
     /// <summary>Gets or sets the 2D renderer used for drawing. Set after GL context is created.</summary>
     public Renderer2D? Renderer

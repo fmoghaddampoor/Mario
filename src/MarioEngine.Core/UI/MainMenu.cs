@@ -3,7 +3,7 @@ namespace MarioEngine.Core.UI;
 using System.Collections.Generic;
 
 /// <summary>Main menu screen.</summary>
-internal sealed class MainMenu
+public sealed class MainMenu
 {
     /// <summary>Menu items.</summary>
     public List<MenuItem> Items { get; set; } = new()

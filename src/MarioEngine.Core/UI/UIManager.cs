@@ -3,10 +3,10 @@ namespace MarioEngine.Core.UI;
 using System.Collections.Generic;
 
 /// <summary>Manages UI state with stack-based navigation.</summary>
-internal sealed class UIManager
+public sealed class UIManager
 {
     /// <summary>UI states.</summary>
-    internal enum UIState
+    public enum UIState
     {
         /// <summary>No UI visible.</summary>
         None,

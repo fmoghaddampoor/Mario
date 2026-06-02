@@ -3,13 +3,13 @@ namespace MarioEngine.Desktop;
 using MarioEngine.Core;
 using MarioEngine.Core.Graphics;
 using MarioEngine.Core.Graphics.Font;
+using MarioEngine.Core.UI;
 using MarioEngine.Desktop.Resources;
 using Microsoft.Extensions.Logging;
-using Silk.NET.OpenGL;
 
 /// <summary>
-/// Handles the window Update event. Manages the splash-to-game transition
-/// and delegates to game update logic once the game has started.
+/// Handles the window Update event. Manages the splash-to-menu-to-game transition.
+/// After the splash screen, shows the main menu before starting the game.
 /// </summary>
 internal sealed class MarioWindowUpdateHandler
 {
@@ -28,6 +28,15 @@ internal sealed class MarioWindowUpdateHandler
     /// <summary>The MarioWindow providing GL context access.</summary>
     private readonly MarioWindow _window;
 
+    /// <summary>Main menu instance shown after splash.</summary>
+    private MainMenu? _mainMenu;
+
+    /// <summary>Whether the game has been initialized (started from menu).</summary>
+    private bool _gameInitialized;
+
+    /// <summary>Timer for auto-starting game from menu.</summary>
+    private float _menuTimer;
+
     /// <summary>Initializes a new instance of the <see cref="MarioWindowUpdateHandler"/> class.</summary>
     /// <param name="window">The MarioWindow providing GL context access.</param>
     /// <param name="game">The game instance to update.</param>
@@ -43,14 +52,21 @@ internal sealed class MarioWindowUpdateHandler
         _loggerFactory = loggerFactory;
     }
 
-    /// <summary>Called every frame. Updates splash or game.</summary>
+    /// <summary>Called every frame. Updates splash, menu, or game.</summary>
     /// <param name="dt">Delta time in seconds.</param>
     public void Handle(float dt)
     {
-        if (_state.GameStarted)
+        if (_gameInitialized)
         {
             _game.ProcessInput(dt);
             _game.Update(dt);
+            return;
+        }
+
+        if (_state.GameStarted)
+        {
+            _menuTimer += dt;
+            UpdateMenu(dt);
             return;
         }
 
@@ -63,9 +79,75 @@ internal sealed class MarioWindowUpdateHandler
             _state.Splash = null;
             _state.GameStarted = true;
             InitializeRendering();
-            _game.Initialize();
-            _game.LoadContent();
+            ShowMainMenu();
         }
+    }
+
+    /// <summary>Shows the main menu after the splash screen.</summary>
+    private void ShowMainMenu()
+    {
+        _mainMenu = new MainMenu();
+        _game.UI.Show(UIManager.UIState.MainMenu);
+        _logger.LogInformation("Main menu displayed");
+    }
+
+    /// <summary>Updates the main menu. Auto-starts new game after a brief display.</summary>
+    private void UpdateMenu(float dt)
+    {
+        if (_mainMenu == null)
+        {
+            return;
+        }
+
+        _menuTimer += dt;
+
+        // Auto-start game after 1s (placeholder until InputManager is wired to menu)
+        if (_menuTimer >= 1f && !_gameInitialized)
+        {
+            _logger.LogInformation("Auto-starting game from main menu");
+            StartGame();
+        }
+    }
+
+    /// <summary>Handles the selected menu action.</summary>
+    private void HandleMenuConfirm()
+    {
+        if (_mainMenu == null)
+        {
+            return;
+        }
+
+        var selected = _mainMenu.Items[_mainMenu.SelectedIndex].Label;
+
+        switch (selected)
+        {
+            case "New Game":
+                StartGame();
+                break;
+            case "Continue":
+                StartGame();
+                break;
+            case "Settings":
+                _logger.LogInformation("Settings selected");
+                break;
+            case "Credits":
+                _logger.LogInformation("Credits selected");
+                break;
+            case "Quit":
+                _window.NativeWindow.Close();
+                break;
+        }
+    }
+
+    /// <summary>Starts the actual game after menu selection.</summary>
+    private void StartGame()
+    {
+        _mainMenu = null;
+        _game.UI.Hide();
+        _gameInitialized = true;
+        _logger.LogInformation("Starting game from main menu");
+        _game.Initialize();
+        _game.LoadContent();
     }
 
     /// <summary>Creates the rendering pipeline and assigns it to the game instance.</summary>
