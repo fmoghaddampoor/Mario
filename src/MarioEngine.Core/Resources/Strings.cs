@@ -50,4 +50,10 @@ internal static class Strings
 
     /// <summary>Gets the "Audio shutdown" log message.</summary>
     public static string Audio_Shutdown => "Audio shutdown complete";
+
+    /// <summary>Gets the "Loaded SFX" log message with name, format, rate, duration.</summary>
+    public static string Sfx_Loaded => "Loaded SFX: {Name} ({Format}, {Rate}Hz, {Duration:F2}s)";
+
+    /// <summary>Gets the "All SFX buffers unloaded" log message.</summary>
+    public static string Sfx_UnloadedAll => "All SFX buffers unloaded";
 }

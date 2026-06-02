@@ -26,6 +26,9 @@ public sealed class AudioManager : IDisposable
     /// <summary>Low-level AL API instance for source/buffer operations. Null in silent mode.</summary>
     private AL? _al;
 
+    /// <summary>Library of loaded sound effect buffers.</summary>
+    private SfxLibrary? _sfx;
+
     /// <summary>True after successful initialization.</summary>
     private bool _initialized;
 
@@ -54,6 +57,9 @@ public sealed class AudioManager : IDisposable
     /// <summary>Gets the SFX bus volume (0.0 to 1.0).</summary>
     public float SfxVolume => _config.SfxVolume;
 
+    /// <summary>Gets the SFX library for loading and caching sound effect buffers.</summary>
+    public SfxLibrary? Sfx => _sfx;
+
     /// <summary>Gets a value indicating whether OpenAL was initialized successfully.</summary>
     public bool IsInitialized => _initialized;
 
@@ -81,6 +87,7 @@ public sealed class AudioManager : IDisposable
             _al.SetListenerProperty(ListenerFloat.Gain, _config.MasterVolume);
             _al.SetListenerProperty(ListenerVector3.Position, 0f, 0f, 0f);
 
+            _sfx = new SfxLibrary(_al, _logger);
             _initialized = true;
 
             if (_logger.IsEnabled(LogLevel.Information))
@@ -122,6 +129,8 @@ public sealed class AudioManager : IDisposable
 
         _disposed = true;
         _initialized = false;
+        _sfx?.UnloadAll();
+        _sfx = null;
         _al?.Dispose();
         _al = null;
         _context?.Dispose();
@@ -133,6 +142,8 @@ public sealed class AudioManager : IDisposable
     private void EnterSilentMode()
     {
         _initialized = false;
+        _sfx?.UnloadAll();
+        _sfx = null;
         _al?.Dispose();
         _al = null;
         _context?.Dispose();
