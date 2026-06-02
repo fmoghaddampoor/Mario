@@ -1,32 +1,110 @@
 namespace MarioEngine.Core;
 
 using MarioEngine.Core.Graphics;
+using MarioEngine.Core.UI;
 
 /// <summary>
 /// Contains the <see cref="Render"/> method for the <see cref="Game"/> class.
 /// Called every frame to draw the current game state.
-/// Renders the debug overlay on top if visible.
+/// Renders the main menu when in menu state, and debug overlay on top if visible.
 /// </summary>
 public partial class Game
 {
+    /// <summary>Menu background color (dark navy).</summary>
+    private const uint MenuBgColor = 0xFF1A1A2Eu;
+
+    /// <summary>Menu title color (gold).</summary>
+    private const uint MenuTitleColor = 0xFFFFD700u;
+
+    /// <summary>Menu item normal color.</summary>
+    private const uint MenuItemColor = 0xFF2D2D44u;
+
+    /// <summary>Menu item selected color (accent).</summary>
+    private const uint MenuItemSelectedColor = 0xFF4A4A6Au;
+
+    /// <summary>Menu item text color.</summary>
+    private const uint MenuTextColor = 0xFFCCCCCCu;
+
+    /// <summary>Menu item text color when selected.</summary>
+    private const uint MenuTextSelectedColor = 0xFFFFFFFFu;
+
+    /// <summary>Render layer for menu background.</summary>
+    private const float MenuLayer = 900f;
+
     /// <summary>
     /// Called every frame after <see cref="Update"/>.
     /// Override to render the current game state.
-    /// Call base.Render(interpolation) to render the debug overlay.
-    /// Begin/End are called automatically around the overlay rendering.
-    /// If overriding, handle Begin/End for your own content separately.
+    /// Renders menus, then the debug overlay on top.
     /// </summary>
     /// <param name="interpolation">Interpolation factor (0-1) between fixed updates.</param>
     public virtual void Render(float interpolation)
     {
-        if (!_overlay.Visible || _renderer == null)
+        if (_renderer == null)
         {
             return;
         }
 
         _renderer.Begin();
-        RenderDebugOverlay();
+
+        // Render UI screens
+        switch (_ui.CurrentState)
+        {
+            case UIManager.UIState.MainMenu:
+                RenderMainMenu();
+                break;
+            case UIManager.UIState.None:
+            default:
+                // Game rendering goes here when play starts
+                break;
+        }
+
+        // Render debug overlay on top of everything
+        if (_overlay.Visible)
+        {
+            RenderDebugOverlay();
+        }
+
         _renderer.End();
+    }
+
+    /// <summary>Renders the main menu screen.</summary>
+    private void RenderMainMenu()
+    {
+        var renderer = _renderer!;
+        var viewW = renderer.Camera.ViewportWidth;
+        var viewH = renderer.Camera.ViewportHeight;
+
+        // Background
+        renderer.DrawScreenRect(0, 0, viewW, viewH, MenuBgColor, MenuLayer);
+
+        // Title bar at top
+        renderer.DrawScreenRect(0, 0, viewW, 80, 0xFF16213Eu, MenuLayer - 1);
+
+        // Title text area (colored bar)
+        renderer.DrawScreenRect(viewW * 0.25f, 20, viewW * 0.5f, 40, 0xFF0F3460u, MenuLayer - 0.5f);
+
+        // Menu items
+        var menu = new[] { "New Game", "Settings", "Credits", "Quit" };
+        var selectedIndex = 0; // Will be wired to MainMenu.SelectedIndex
+        var itemW = 300f;
+        var itemH = 50f;
+        var startY = viewH * 0.35f;
+        var startX = (viewW - itemW) * 0.5f;
+        var spacing = 10f;
+
+        for (var i = 0; i < menu.Length; i++)
+        {
+            var y = startY + (i * (itemH + spacing));
+            var isSelected = i == selectedIndex;
+            var color = isSelected ? MenuItemSelectedColor : MenuItemColor;
+            renderer.DrawScreenRect(startX, y, itemW, itemH, color, MenuLayer - 1);
+
+            // Draw a colored indicator on the left edge of selected item
+            if (isSelected)
+            {
+                renderer.DrawScreenRect(startX, y, 5, itemH, MenuTitleColor, MenuLayer - 0.5f);
+            }
+        }
     }
 
     /// <summary>

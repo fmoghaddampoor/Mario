@@ -101,8 +101,8 @@ internal sealed class MarioWindowUpdateHandler
 
         _menuTimer += dt;
 
-        // Auto-start game after 1s (placeholder until InputManager is wired to menu)
-        if (_menuTimer >= 1f && !_gameInitialized)
+        // Auto-start game after 5s (allows time to see the menu)
+        if (_menuTimer >= 5f && !_gameInitialized)
         {
             _logger.LogInformation("Auto-starting game from main menu");
             StartGame();
