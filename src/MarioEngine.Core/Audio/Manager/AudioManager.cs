@@ -12,7 +12,7 @@ using Silk.NET.OpenAL;
 /// and graceful silent fallback if OpenAL is unavailable.
 /// Call <see cref="Initialize"/> after the game starts, <see cref="Dispose"/> on shutdown.
 /// </summary>
-public sealed class AudioManager : IDisposable
+public sealed partial class AudioManager : IDisposable
 {
     /// <summary>Logger for audio lifecycle events.</summary>
     private readonly ILogger _logger;
@@ -64,49 +64,6 @@ public sealed class AudioManager : IDisposable
     public bool IsInitialized => _initialized;
 
     /// <summary>
-    /// Initializes the OpenAL audio device and context using the default device.
-    /// Falls back to silent mode gracefully if OpenAL is unavailable.
-    /// </summary>
-    public void Initialize()
-    {
-        if (_initialized)
-        {
-            return;
-        }
-
-        try
-        {
-            _al = AL.GetApi();
-            _context = new AudioContext();
-            _context.MakeCurrent();
-
-            var vendor = _al.GetStateProperty(StateString.Vendor);
-            var renderer = _al.GetStateProperty(StateString.Renderer);
-            var version = _al.GetStateProperty(StateString.Version);
-
-            _al.SetListenerProperty(ListenerFloat.Gain, _config.MasterVolume);
-            _al.SetListenerProperty(ListenerVector3.Position, 0f, 0f, 0f);
-
-            _sfx = new SfxLibrary(_al, _logger);
-            _initialized = true;
-
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation(
-                    Resources.Strings.Audio_Initialized,
-                    vendor,
-                    renderer,
-                    version);
-            }
-        }
-        catch (Exception ex) when (ex is not OutOfMemoryException)
-        {
-            _logger.LogWarning(ex, Resources.Strings.Audio_InitFailed);
-            EnterSilentMode();
-        }
-    }
-
-    /// <summary>
     /// Sets the master volume and applies it to the OpenAL listener.
     /// </summary>
     /// <param name="volume">Volume level from 0.0 (silent) to 1.0 (full).</param>
@@ -117,37 +74,5 @@ public sealed class AudioManager : IDisposable
         {
             _al.SetListenerProperty(ListenerFloat.Gain, _config.MasterVolume);
         }
-    }
-
-    /// <summary>Releases OpenAL device and context resources.</summary>
-    public void Dispose()
-    {
-        if (_disposed)
-        {
-            return;
-        }
-
-        _disposed = true;
-        _initialized = false;
-        _sfx?.UnloadAll();
-        _sfx = null;
-        _al?.Dispose();
-        _al = null;
-        _context?.Dispose();
-        _context = null;
-
-        _logger.LogInformation(Resources.Strings.Audio_Shutdown);
-    }
-
-    private void EnterSilentMode()
-    {
-        _initialized = false;
-        _sfx?.UnloadAll();
-        _sfx = null;
-        _al?.Dispose();
-        _al = null;
-        _context?.Dispose();
-        _context = null;
-        _logger.LogInformation(Resources.Strings.Audio_SilentMode);
     }
 }

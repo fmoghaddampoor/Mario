@@ -24,6 +24,15 @@ internal static class WavLoader
     /// <summary>PCM audio format indicator in the fmt chunk.</summary>
     private const ushort PcmFormat = 1;
 
+    /// <summary>Channels field not yet read from fmt chunk.</summary>
+    private const ushort ChannelsUnset = 0;
+
+    /// <summary>Sample rate field not yet read from fmt chunk.</summary>
+    private const int SampleRateUnset = 0;
+
+    /// <summary>Bits per sample field not yet read from fmt chunk.</summary>
+    private const ushort BitsUnset = 0;
+
     /// <summary>
     /// Loads and parses a WAV file from disk.
     /// </summary>
@@ -54,9 +63,9 @@ internal static class WavLoader
             throw new InvalidDataException("Not a valid WAVE file");
         }
 
-        ushort channels = 0;
-        int sampleRate = 0;
-        ushort bitsPerSample = 0;
+        ushort channels = ChannelsUnset;
+        int sampleRate = SampleRateUnset;
+        ushort bitsPerSample = BitsUnset;
         byte[]? samples = null;
 
         while (stream.Position < stream.Length)
@@ -98,42 +107,11 @@ internal static class WavLoader
             throw new InvalidDataException("WAV file contains no audio data");
         }
 
-        if (channels == 0 || sampleRate == 0 || bitsPerSample == 0)
+        if (channels == ChannelsUnset || sampleRate == SampleRateUnset || bitsPerSample == BitsUnset)
         {
             throw new InvalidDataException("WAV file is missing format information");
         }
 
         return new WavData(samples, channels, sampleRate, bitsPerSample);
-    }
-
-    /// <summary>
-    /// Result of a WAV file parse operation containing raw PCM data and format metadata.
-    /// </summary>
-    internal readonly struct WavData
-    {
-        /// <summary>Raw PCM sample data.</summary>
-        internal readonly byte[] Samples;
-
-        /// <summary>Number of audio channels (1 = mono, 2 = stereo).</summary>
-        internal readonly ushort Channels;
-
-        /// <summary>Sample rate in Hz (e.g. 44100, 48000).</summary>
-        internal readonly int SampleRate;
-
-        /// <summary>Bits per sample (8 or 16).</summary>
-        internal readonly ushort BitsPerSample;
-
-        /// <summary>Initializes a new instance of the <see cref="WavData"/> struct.</summary>
-        /// <param name="samples">Raw PCM sample data.</param>
-        /// <param name="channels">Number of audio channels.</param>
-        /// <param name="sampleRate">Sample rate in Hz.</param>
-        /// <param name="bitsPerSample">Bits per sample.</param>
-        internal WavData(byte[] samples, ushort channels, int sampleRate, ushort bitsPerSample)
-        {
-            Samples = samples;
-            Channels = channels;
-            SampleRate = sampleRate;
-            BitsPerSample = bitsPerSample;
-        }
     }
 }
