@@ -42,6 +42,9 @@ public sealed class UIManager
     /// <summary>Current UI state.</summary>
     public UIState CurrentState { get; private set; } = UIState.None;
 
+    /// <summary>Gets the active main menu screen.</summary>
+    public MainMenu MainMenu { get; } = new MainMenu();
+
     private readonly Stack<UIState> _stateStack = new();
 
     /// <summary>Shows a new UI state, pushing onto the stack.</summary>

@@ -1,9 +1,13 @@
 namespace MarioEngine.Desktop;
 
+using System;
+using System.IO;
 using MarioEngine.Desktop.Resources;
 using Microsoft.Extensions.Logging;
+using Silk.NET.Core;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
+using StbImageSharp;
 
 /// <summary>
 /// Handles the native window Load event. Creates the OpenGL context,
@@ -62,6 +66,24 @@ internal sealed class MarioWindowInitializer
                 _height,
                 4,
                 6);
+        }
+
+        // Load the window icon dynamically at runtime
+        var iconPath = Path.Combine(AppContext.BaseDirectory, "game.png");
+        if (File.Exists(iconPath))
+        {
+            try
+            {
+                using var stream = File.OpenRead(iconPath);
+                var iconImage = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+                var rawImage = new RawImage(iconImage.Width, iconImage.Height, iconImage.Data);
+                _nativeWindow.SetWindowIcon(ref rawImage);
+                _logger.LogInformation("Window icon loaded successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to load window icon");
+            }
         }
 
         _nativeWindow.FramebufferResize += HandleFramebufferResize;

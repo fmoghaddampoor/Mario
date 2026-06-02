@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="game.ico" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="game.png" CopyToOutputDirectory="PreserveNewest" />
     <None Include="splash_nebula.png" CopyToOutputDirectory="PreserveNewest" />
     <None Include="splash_stars.png" CopyToOutputDirectory="PreserveNewest" />
     <None Include="splash_overlay.png" CopyToOutputDirectory="PreserveNewest" />

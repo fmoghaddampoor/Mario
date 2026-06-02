@@ -6,6 +6,7 @@ using MarioEngine.Core.Graphics.Font;
 using MarioEngine.Core.UI;
 using MarioEngine.Desktop.Resources;
 using Microsoft.Extensions.Logging;
+using Silk.NET.Input;
 using Silk.NET.OpenGL;
 
 /// <summary>
@@ -157,6 +158,9 @@ void main() { fragColor = texture(uTexture, vTexCoord) * vColor; }";
         renderer.Camera.ViewportWidth = _window.FramebufferWidth;
         renderer.Camera.ViewportHeight = _window.FramebufferHeight;
         _game.Renderer = renderer;
+
+        var font = BitmapFont.CreateDefault(gl, _loggerFactory.CreateLogger<BitmapFont>());
+        _game.Font = font;
     }
 #pragma warning restore CA2000
 
@@ -175,5 +179,38 @@ void main() { fragColor = texture(uTexture, vTexCoord) * vColor; }";
         _logger.LogInformation("Starting game from main menu");
         _game.Initialize();
         _game.LoadContent();
+    }
+
+    internal void OnKeyDown(Key key)
+    {
+        if (key == Key.F3)
+        {
+            _game.ToggleDebugOverlay();
+            return;
+        }
+
+        if (!GameInitialized && MainMenuInstance != null)
+        {
+            if (key == Key.Up || key == Key.W)
+            {
+                _game.UI.MainMenu.NavigateUp();
+            }
+            else if (key == Key.Down || key == Key.S)
+            {
+                _game.UI.MainMenu.NavigateDown();
+            }
+            else if (key == Key.Enter || key == Key.Space)
+            {
+                var selectedIndex = _game.UI.MainMenu.SelectedIndex;
+                if (selectedIndex == 0)
+                {
+                    StartGame();
+                }
+                else if (selectedIndex == 4)
+                {
+                    _window.Close();
+                }
+            }
+        }
     }
 }

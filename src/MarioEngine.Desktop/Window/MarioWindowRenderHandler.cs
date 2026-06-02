@@ -48,16 +48,6 @@ internal sealed class MarioWindowRenderHandler
             _updateHandler.ShowMainMenu();
         }
 
-        // Auto-start game from menu (runs here too since menu input is deferred)
-        if (_updateHandler.MainMenuInstance != null && !_updateHandler.GameInitialized)
-        {
-            _updateHandler.AddMenuTimer(dt);
-            if (_updateHandler.MenuTimer >= 5f)
-            {
-                _updateHandler.StartGame();
-            }
-        }
-
         if (!_state.GameStarted)
         {
             _state.Splash?.Render(_window.FramebufferWidth, _window.FramebufferHeight);

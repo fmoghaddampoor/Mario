@@ -2,6 +2,7 @@ namespace MarioEngine.Desktop;
 
 using MarioEngine.Core;
 using Microsoft.Extensions.Logging;
+using Silk.NET.Input;
 
 /// <summary>
 /// Contains the <see cref="MarioWindow.WireGameEvents"/> method for the <see cref="MarioWindow"/> class.
@@ -26,6 +27,15 @@ internal sealed partial class MarioWindow
         var closingHandler = new MarioWindowClosingHandler(game);
 
         _window.Load += loadHandler.Handle;
+        _window.Load += () =>
+        {
+            var input = _window.CreateInput();
+            foreach (var keyboard in input.Keyboards)
+            {
+                keyboard.KeyDown += (kb, key, code) => updateHandler.OnKeyDown(key);
+            }
+        };
+
         _window.Update += (dt) => updateHandler.Handle((float)dt);
         _window.Render += (dt) => renderHandler.Handle((float)dt);
         _window.Closing += closingHandler.Handle;

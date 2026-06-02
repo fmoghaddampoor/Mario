@@ -72,7 +72,6 @@ internal sealed partial class MarioWindow : IDisposable
         GraphicsConfigurator.Configure(options, parsed);
 
         var nativeWindow = Window.Create(options);
-        nativeWindow.WindowState = WindowState.Fullscreen;
 
         var marioWindow = new MarioWindow(nativeWindow, logger, splashDuration);
 
@@ -87,6 +86,12 @@ internal sealed partial class MarioWindow : IDisposable
     {
         _logger.LogInformation(Resources.Strings.Window_Starting);
         _window.Run();
+    }
+
+    /// <summary>Closes the window.</summary>
+    public void Close()
+    {
+        _window.Close();
     }
 
     /// <summary>Closes the window and cleans up resources.</summary>

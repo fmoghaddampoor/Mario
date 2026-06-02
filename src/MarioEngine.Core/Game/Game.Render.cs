@@ -44,6 +44,7 @@ public partial class Game
             return;
         }
 
+        _renderer.Font = _font;
         _renderer.Clear(0.1f, 0.1f, 0.18f);
         _renderer.Begin();
 
@@ -68,43 +69,114 @@ public partial class Game
         _renderer.End();
     }
 
-    /// <summary>Renders the main menu screen.</summary>
+    /// <summary>Renders the main menu screen with rich premium aesthetics.</summary>
     private void RenderMainMenu()
     {
         var renderer = _renderer!;
         var viewW = renderer.Camera.ViewportWidth;
         var viewH = renderer.Camera.ViewportHeight;
+        var time = Time.TotalTime;
 
-        // Background
+        // 1. Base Background
         renderer.DrawScreenRect(0, 0, viewW, viewH, MenuBgColor, MenuLayer);
 
-        // Title bar at top
-        renderer.DrawScreenRect(0, 0, viewW, 80, 0xFF16213Eu, MenuLayer - 1);
+        // 2. Subtle Background Grid Pattern
+        var gridSpacing = 40f;
+        var gridColor = 0xFF22223Bu; // Deep purple/blue grid lines
+        for (float x = 0; x < viewW; x += gridSpacing)
+        {
+            renderer.DrawScreenRect(x, 0, 1, viewH, gridColor, MenuLayer - 0.1f);
+        }
+        for (float y = 0; y < viewH; y += gridSpacing)
+        {
+            renderer.DrawScreenRect(0, y, viewW, 1, gridColor, MenuLayer - 0.1f);
+        }
 
-        // Title text area (colored bar)
-        renderer.DrawScreenRect(viewW * 0.25f, 20, viewW * 0.5f, 40, 0xFF0F3460u, MenuLayer - 0.5f);
+        // 3. Floating Retro Ambient Blocks on Sides
+        float floatOffset = MathF.Sin(time * 2f) * 15f;
+        // Left decorative block
+        renderer.DrawScreenRect(150, (viewH * 0.4f) + floatOffset, 40, 40, 0xFFD4AF37u, MenuLayer - 0.5f); // Golden Question block look
+        renderer.DrawScreenRect(155, (viewH * 0.4f) + floatOffset + 5, 30, 30, 0xFF8B6508u, MenuLayer - 0.6f);
+        renderer.DrawStringScreen("?", 166, (viewH * 0.4f) + floatOffset + 12, 0xFFFFFFFFu, MenuLayer - 0.7f, 2f);
 
-        // Menu items
-        var menu = new[] { "New Game", "Settings", "Credits", "Quit" };
-        var selectedIndex = 0; // Will be wired to MainMenu.SelectedIndex
-        var itemW = 300f;
-        var itemH = 50f;
+        // Right decorative block
+        renderer.DrawScreenRect(viewW - 190, (viewH * 0.5f) - floatOffset, 40, 40, 0xFFB22222u, MenuLayer - 0.5f); // Red brick block look
+        renderer.DrawScreenRect(viewW - 185, (viewH * 0.5f) - floatOffset + 5, 30, 30, 0xFF5C0606u, MenuLayer - 0.6f);
+
+        // 4. Header Bar
+        renderer.DrawScreenRect(0, 0, viewW, 90, 0xFF0F172Au, MenuLayer - 1); // Darker blue slate header
+        renderer.DrawScreenRect(0, 88, viewW, 3, 0xFFFFD700u, MenuLayer - 1.5f); // Gold accent line at the bottom of header
+
+        // 5. Render Title Text with double drop shadow
+        var titleText = "SUPER MARIO GAME";
+        var titleScale = 3f;
+        var titleWidth = titleText.Length * 8f * titleScale;
+        var titleX = (viewW - titleWidth) * 0.5f;
+        var titleY = 25f;
+
+        // Shadow 1 (Deep offset)
+        renderer.DrawStringScreen(titleText, titleX + 4, titleY + 4, 0xFF000000u, MenuLayer - 2f, titleScale);
+        // Shadow 2 (Accent outline)
+        renderer.DrawStringScreen(titleText, titleX + 2, titleY + 2, 0xFF4F46E5u, MenuLayer - 2.5f, titleScale);
+        // Main Text
+        renderer.DrawStringScreen(titleText, titleX, titleY, MenuTitleColor, MenuLayer - 3f, titleScale);
+
+        // 6. Menu items
+        var menu = _ui.MainMenu.Items;
+        var selectedIndex = _ui.MainMenu.SelectedIndex;
+        var itemW = 320f;
+        var itemH = 54f;
         var startY = viewH * 0.35f;
         var startX = (viewW - itemW) * 0.5f;
-        var spacing = 10f;
+        var spacing = 14f;
 
-        for (var i = 0; i < menu.Length; i++)
+        for (var i = 0; i < menu.Count; i++)
         {
             var y = startY + (i * (itemH + spacing));
             var isSelected = i == selectedIndex;
-            var color = isSelected ? MenuItemSelectedColor : MenuItemColor;
-            renderer.DrawScreenRect(startX, y, itemW, itemH, color, MenuLayer - 1);
 
-            // Draw a colored indicator on the left edge of selected item
+            // Slide animation on selection
+            var slideX = isSelected ? 15f + MathF.Sin(time * 8f) * 2f : 0f;
+            var currentX = startX + slideX;
+
+            // Drop shadow for button
+            renderer.DrawScreenRect(currentX + 6, y + 6, itemW, itemH, 0x66000000u, MenuLayer - 0.2f);
+
+            // Button border (outer highlight)
+            var borderColor = isSelected ? 0xFFFFD700u : 0xFF374151u; // Gold for active, dark grey for inactive
+            renderer.DrawScreenRect(currentX - 2, y - 2, itemW + 4, itemH + 4, borderColor, MenuLayer - 0.4f);
+
+            // Button inner background
+            var bgColor = isSelected ? 0xFF1E293Bu : 0xFF0F172Au; // Slate-800 for active, slate-900 for inactive
+            renderer.DrawScreenRect(currentX, y, itemW, itemH, bgColor, MenuLayer - 0.5f);
+
+            // Left accent bar
+            var barColor = isSelected ? 0xFFFFD700u : 0xFF4B5563u;
+            renderer.DrawScreenRect(currentX, y, 6, itemH, barColor, MenuLayer - 0.6f);
+
+            // Text coordinates
+            var itemText = menu[i].Label;
+            var itemTextW = itemText.Length * 8f * 2f;
+            var tx = currentX + (itemW - itemTextW) * 0.5f;
+            var ty = y + (itemH - 16f) * 0.5f;
+
+            // Draw Selector Arrow for active item
             if (isSelected)
             {
-                renderer.DrawScreenRect(startX, y, 5, itemH, MenuTitleColor, MenuLayer - 0.5f);
+                var arrowOffset = MathF.Sin(time * 10f) * 3f;
+                renderer.DrawStringScreen(">", currentX - 25f + arrowOffset, ty, 0xFFFFD700u, MenuLayer - 0.8f, 2f);
+                renderer.DrawStringScreen("<", currentX + itemW + 12f - arrowOffset, ty, 0xFFFFD700u, MenuLayer - 0.8f, 2f);
             }
+
+            var textColor = isSelected ? MenuTextSelectedColor : MenuTextColor;
+            renderer.DrawStringScreen(itemText, tx, ty, textColor, MenuLayer - 0.7f, 2f);
+        }
+
+        // 7. Screen Scanlines (CRT overlay effect)
+        var scanlineHeight = 2f;
+        for (float y = 0; y < viewH; y += 4f)
+        {
+            renderer.DrawScreenRect(0, y, viewW, scanlineHeight, 0x1A000000u, MenuLayer - 5f); // 10% opaque black lines
         }
     }
 

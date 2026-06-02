@@ -283,7 +283,8 @@ public sealed class Renderer2D
     /// <param name="y">Screen Y position in pixels from top.</param>
     /// <param name="color">RGBA color packed as uint.</param>
     /// <param name="layer">Render layer (higher = on top).</param>
-    public void DrawStringScreen(string text, float x, float y, uint color, float layer)
+    /// <param name="scale">Scale multiplier for font rendering size.</param>
+    public void DrawStringScreen(string text, float x, float y, uint color, float layer, float scale = 1f)
     {
         if (Font == null || string.IsNullOrEmpty(text))
         {
@@ -299,7 +300,7 @@ public sealed class Renderer2D
             if (c == '\n')
             {
                 x = startX;
-                y += font.LineHeight;
+                y += font.LineHeight * scale;
                 continue;
             }
 
@@ -309,15 +310,15 @@ public sealed class Renderer2D
                 continue;
             }
 
-            var charX = x + ch.OffsetX;
-            var charY = y + ch.OffsetY;
+            var charX = x + ch.OffsetX * scale;
+            var charY = y + ch.OffsetY * scale;
             var cx = ((charX / viewW) * 2f) - 1f;
             var cy = 1f - ((charY / viewH) * 2f);
-            var cw = (ch.Width / viewW) * 2f;
-            var ch2 = (ch.Height / viewH) * 2f;
+            var cw = (ch.Width * scale / viewW) * 2f;
+            var ch2 = (ch.Height * scale / viewH) * 2f;
             var textureHandle = (uint)font.AtlasTextureHandle;
             _batcher.Draw(textureHandle, cx, cy - ch2, cw, ch2, color, layer, ch.U1, ch.V1, ch.U2, ch.V2);
-            x += ch.AdvanceX;
+            x += ch.AdvanceX * scale;
         }
     }
 }
