@@ -41,4 +41,16 @@ internal static class Strings
 
     /// <summary>Gets the fatal error console message with format placeholder.</summary>
     public static string Fatal_ErrorMessage => "Fatal error: {0}";
+
+    /// <summary>Gets the fullscreen enabled log message.</summary>
+    public static string Video_FullscreenOn => "Fullscreen mode enabled";
+
+    /// <summary>Gets the fullscreen disabled log message.</summary>
+    public static string Video_FullscreenOff => "Fullscreen mode disabled";
+
+    /// <summary>Gets the VSync enabled log message.</summary>
+    public static string Video_VSyncOn => "VSync enabled";
+
+    /// <summary>Gets the VSync disabled log message.</summary>
+    public static string Video_VSyncOff => "VSync disabled";
 }
