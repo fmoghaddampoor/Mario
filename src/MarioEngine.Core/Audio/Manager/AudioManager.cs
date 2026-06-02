@@ -34,6 +34,9 @@ public sealed partial class AudioManager : IDisposable
     /// <summary>Pool of OpenAL sources for SFX playback with priority recycling.</summary>
     private SfxPool? _sfxPool;
 
+    /// <summary>Spatial audio for 3D positioning, pitch variation, and occlusion.</summary>
+    private SfxSpatial? _spatial;
+
     /// <summary>Audio bus system managing per-bus volumes and mute states.</summary>
     private AudioBusSystem? _busSystem;
 
@@ -67,6 +70,9 @@ public sealed partial class AudioManager : IDisposable
 
     /// <summary>Gets the SFX pool for playing sound effects.</summary>
     public SfxPool? SfxPool => _sfxPool;
+
+    /// <summary>Gets the spatial audio helper for 3D positioning and effects.</summary>
+    public SfxSpatial? Spatial => _spatial;
 
     /// <summary>Gets the music manager for streaming background tracks.</summary>
     public MusicManager? Music => _music;

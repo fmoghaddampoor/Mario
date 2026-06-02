@@ -21,6 +21,7 @@ public sealed partial class AudioManager
         _initialized = false;
         _music?.Dispose();
         _music = null;
+        _spatial = null;
         _sfxPool?.Dispose();
         _sfxPool = null;
         _busSystem = null;
