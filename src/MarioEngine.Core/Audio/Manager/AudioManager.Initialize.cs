@@ -1,6 +1,7 @@
 namespace MarioEngine.Core.Audio;
 
 using System;
+using MarioEngine.Core.Audio.Music;
 using MarioEngine.Core.Resources;
 using Microsoft.Extensions.Logging;
 using Silk.NET.OpenAL;
@@ -36,6 +37,7 @@ public sealed partial class AudioManager
             _al.SetListenerProperty(ListenerVector3.Position, 0f, 0f, 0f);
 
             _sfx = new SfxLibrary(_al, _logger);
+            _music = new MusicManager(_al, _logger);
             _initialized = true;
 
             if (_logger.IsEnabled(LogLevel.Information))
@@ -58,6 +60,8 @@ public sealed partial class AudioManager
     private void EnterSilentMode()
     {
         _initialized = false;
+        _music?.Dispose();
+        _music = null;
         _sfx?.UnloadAll();
         _sfx = null;
         _al?.Dispose();

@@ -15,5 +15,6 @@ public partial class Game
     public virtual void Update(float dt)
     {
         _metrics.Update(dt);
+        _audio.Update();
     }
 }

@@ -56,4 +56,10 @@ internal static class Strings
 
     /// <summary>Gets the "All SFX buffers unloaded" log message.</summary>
     public static string Sfx_UnloadedAll => "All SFX buffers unloaded";
+
+    /// <summary>Gets the "Playing music" log message with name and duration.</summary>
+    public static string Music_Playing => "Playing music: {Name} ({Duration:F1}s)";
+
+    /// <summary>Gets the "Music file not found" log message.</summary>
+    public static string Music_NotFound => "Music not found: {Path}";
 }

@@ -1,6 +1,7 @@
 namespace MarioEngine.Core.Audio;
 
 using System;
+using MarioEngine.Core.Audio.Music;
 using MarioEngine.Core.Config;
 using MarioEngine.Core.Resources;
 using Microsoft.Extensions.Logging;
@@ -28,6 +29,9 @@ public sealed partial class AudioManager : IDisposable
 
     /// <summary>Library of loaded sound effect buffers.</summary>
     private SfxLibrary? _sfx;
+
+    /// <summary>Music streaming manager for background tracks.</summary>
+    private MusicManager? _music;
 
     /// <summary>True after successful initialization.</summary>
     private bool _initialized;
@@ -60,8 +64,19 @@ public sealed partial class AudioManager : IDisposable
     /// <summary>Gets the SFX library for loading and caching sound effect buffers.</summary>
     public SfxLibrary? Sfx => _sfx;
 
+    /// <summary>Gets the music manager for streaming background tracks.</summary>
+    public MusicManager? Music => _music;
+
     /// <summary>Gets a value indicating whether OpenAL was initialized successfully.</summary>
     public bool IsInitialized => _initialized;
+
+    /// <summary>
+    /// Called every frame. Refills streaming music buffers.
+    /// </summary>
+    public void Update()
+    {
+        _music?.Update();
+    }
 
     /// <summary>
     /// Sets the master volume and applies it to the OpenAL listener.
